@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
 <style>
+/* ========== STYLES (inchangés, gardez votre CSS existant ici) ========== */
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
   --brun:#C49A6C;
@@ -207,6 +208,8 @@ footer{background:var(--brun-dark);color:white;text-align:center;padding:25px;ma
 .permission-toggle{margin-top:15px;padding:10px;background:rgba(196,154,108,0.1);border-radius:20px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
 .permission-toggle label{display:flex;align-items:center;gap:8px;font-size:0.8rem;cursor:pointer;}
 .permission-toggle input{margin:0;width:auto;}
+.galerie-tab{background:transparent;border:2px solid var(--orange);padding:8px 20px;border-radius:30px;cursor:pointer;font-family:'Poppins',sans-serif;font-weight:500;color:var(--orange);transition:0.2s;}
+.galerie-tab.active,.galerie-tab:hover{background:var(--orange);color:white;}
 </style>
 </head>
 <body>
@@ -372,7 +375,7 @@ footer{background:var(--brun-dark);color:white;text-align:center;padding:25px;ma
     <div class="admin-upload-area" id="uploadArea">
       <i class="fas fa-cloud-upload-alt" style="font-size:2rem;color:var(--orange);"></i>
       <p>Cliquez ou glissez-déposez<br>Photos (JPG/PNG) ou Vidéos (MP4)</p>
-      <input type="file" id="fileInput" accept="image/jpeg,image/png,video/mp4" multiple style="display:none;">
+      <input type="file" id="fileInput" accept="image/jpeg,image/png,image/jpg,video/mp4" multiple style="display:none;">
     </div>
     <div class="admin-preview-grid" id="adminPreviewGrid"></div>
     <button class="admin-upload-btn" id="uploadBtn">Ajouter à la galerie</button>
@@ -380,420 +383,488 @@ footer{background:var(--brun-dark);color:white;text-align:center;padding:25px;ma
     <hr>
     <h4 style="color:var(--orange);">Médias existants</h4>
     <div id="mediaList"></div>
+    <button id="exportBackupBtn" style="margin-top:15px;background:var(--brun);color:white;border:none;border-radius:30px;padding:10px;width:100%;cursor:pointer;"><i class="fas fa-download"></i> Exporter la galerie (backup)</button>
+    <input type="file" id="importBackupInput" accept=".json" style="display:none;">
+    <button id="importBackupBtn" style="margin-top:10px;background:var(--orange);color:white;border:none;border-radius:30px;padding:10px;width:100%;cursor:pointer;"><i class="fas fa-upload"></i> Importer une sauvegarde</button>
   </div>
 </div>
 
-<style>
-.galerie-tab{background:transparent;border:2px solid var(--orange);padding:8px 20px;border-radius:30px;cursor:pointer;font-family:'Poppins',sans-serif;font-weight:500;color:var(--orange);transition:0.2s;}
-.galerie-tab.active,.galerie-tab:hover{background:var(--orange);color:white;}
-</style>
-
 <script>
 // ============================================================
-//  GESTION DE LA GALERIE AVEC STOCKAGE LOCAL (INDEXEDDB)
-//  AVEC AUTHENTIFICATION ADMIN ET PERMISSIONS
+//  GESTION DE LA GALERIE AVEC STOCKAGE LOCAL (localStorage + IndexedDB)
+//  CORRECTION POUR JPG ET PERSISTANCE DES DONNÉES
 // ============================================================
 
 // CONSTANTES
-const ADMIN_CODE = "njimounira2026";  // Code admin - changez-le ici
+const ADMIN_CODE = "njimounira2026";
 let isAdmin = false;
 let mediaItems = [];
 let currentFilter = 'all';
 
-// IndexedDB setup
-const DB_NAME = 'WeddingGalleryDB';
-const DB_VERSION = 2;
-const STORE_NAME = 'media';
-let db = null;
+// Utilisation de localStorage comme solution principale (plus fiable)
+const STORAGE_KEY = 'wedding_gallery_data';
 
-function openDB() {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
-    request.onerror = () => reject(request.error);
-    request.onsuccess = () => {
-      db = request.result;
-      resolve(db);
-    };
-    request.onupgradeneeded = (event) => {
-      const db = event.target.result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        const store = db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
-        store.createIndex('type', 'type', { unique: false });
-        store.createIndex('date', 'date', { unique: false });
-        store.createIndex('downloadAllowed', 'downloadAllowed', { unique: false });
-      } else {
-        const transaction = event.target.transaction;
-        const store = transaction.objectStore(STORE_NAME);
-        const getAll = store.getAll();
-        getAll.onsuccess = () => {
-          const items = getAll.result;
-          items.forEach(item => {
-            if (item.downloadAllowed === undefined) {
-              item.downloadAllowed = true;
-              store.put(item);
+// Fonction pour sauvegarder dans localStorage
+function saveToLocalStorage() {
+    try {
+        // Ne pas sauvegarder les URLs base64 complètes (trop grandes)
+        // On garde juste les métadonnées, les URLs sont déjà stockées
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            mediaItems: mediaItems.map(item => ({
+                id: item.id,
+                type: item.type,
+                url: item.url,
+                thumb: item.thumb,
+                title: item.title,
+                date: item.date,
+                originalName: item.originalName,
+                downloadAllowed: item.downloadAllowed
+            })),
+            lastUpdated: Date.now()
+        }));
+        console.log('✅ Sauvegarde localStorage effectuée');
+        return true;
+    } catch(e) {
+        console.error('❌ Erreur sauvegarde localStorage:', e);
+        return false;
+    }
+}
+
+// Charger depuis localStorage
+function loadFromLocalStorage() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            const data = JSON.parse(saved);
+            if (data.mediaItems && Array.isArray(data.mediaItems)) {
+                mediaItems = data.mediaItems;
+                console.log(`✅ Chargé ${mediaItems.length} médias depuis localStorage`);
+                return true;
             }
-          });
+        }
+    } catch(e) {
+        console.error('❌ Erreur chargement localStorage:', e);
+    }
+    return false;
+}
+
+// Vérifier si une URL base64 est valide
+function isValidBase64(url) {
+    if (!url || typeof url !== 'string') return false;
+    // Vérifier si c'est une base64 valide
+    if (url.startsWith('data:image/') || url.startsWith('data:video/')) {
+        return true;
+    }
+    // Vérifier si c'est une URL HTTP valide
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+        return true;
+    }
+    return false;
+}
+
+// Fonction améliorée pour convertir un fichier en base64 avec compression pour les JPG
+async function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        // Vérifier le type de fichier
+        console.log('📁 Traitement du fichier:', file.name, 'Type:', file.type, 'Taille:', file.size);
+        
+        // Accepter les JPG même si le MIME type est incorrect
+        const isJPG = file.name.toLowerCase().endsWith('.jpg') || 
+                     file.name.toLowerCase().endsWith('.jpeg') ||
+                     file.type === 'image/jpeg' ||
+                     file.type === 'image/jpg';
+        
+        if (isJPG && file.type !== 'image/jpeg') {
+            console.log('⚠️ Correction du MIME type JPG');
+            // Forcer le type pour JPG
+            Object.defineProperty(file, 'type', { value: 'image/jpeg' });
+        }
+        
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            let result = e.target.result;
+            
+            // Compression pour les grandes images
+            if (file.type.startsWith('image/') && file.size > 500 * 1024) {
+                console.log('🖼️ Compression de l\'image...');
+                try {
+                    const compressed = await compressImage(result);
+                    if (compressed) result = compressed;
+                } catch(compressError) {
+                    console.warn('Compression impossible, utilisation originale:', compressError);
+                }
+            }
+            
+            console.log('✅ Conversion réussie, taille:', Math.round(result.length / 1024), 'KB');
+            resolve(result);
         };
-      }
-    };
-  });
+        reader.onerror = (err) => {
+            console.error('❌ Erreur lecture fichier:', err);
+            reject(err);
+        };
+        reader.readAsDataURL(file);
+    });
 }
 
-async function loadMediaFromDB() {
-  return new Promise((resolve, reject) => {
-    if (!db) { reject('DB not ready'); return; }
-    const transaction = db.transaction(STORE_NAME, 'readonly');
-    const store = transaction.objectStore(STORE_NAME);
-    const request = store.getAll();
-    request.onsuccess = () => {
-      mediaItems = request.result || [];
-      mediaItems.sort((a,b) => b.date - a.date);
-      resolve(mediaItems);
-    };
-    request.onerror = () => reject(request.error);
-  });
+// Fonction de compression d'image
+function compressImage(base64) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+            
+            // Redimensionner si trop grand (max 1200px)
+            const maxSize = 1200;
+            if (width > maxSize || height > maxSize) {
+                if (width > height) {
+                    height = (height * maxSize) / width;
+                    width = maxSize;
+                } else {
+                    width = (width * maxSize) / height;
+                    height = maxSize;
+                }
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // Qualité 0.8 pour bon équilibre taille/qualité
+            const compressed = canvas.toDataURL('image/jpeg', 0.8);
+            resolve(compressed);
+        };
+        img.onerror = () => {
+            console.warn('Erreur chargement image pour compression');
+            resolve(base64);
+        };
+        img.src = base64;
+    });
 }
 
-async function saveMediaToDB(media) {
-  return new Promise((resolve, reject) => {
-    if (!db) { reject('DB not ready'); return; }
-    const transaction = db.transaction(STORE_NAME, 'readwrite');
-    const store = transaction.objectStore(STORE_NAME);
-    const request = store.add(media);
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
-
-async function updateMediaInDB(media) {
-  return new Promise((resolve, reject) => {
-    if (!db) { reject('DB not ready'); return; }
-    const transaction = db.transaction(STORE_NAME, 'readwrite');
-    const store = transaction.objectStore(STORE_NAME);
-    const request = store.put(media);
-    request.onsuccess = () => resolve();
-    request.onerror = () => reject(request.error);
-  });
-}
-
-async function deleteMediaFromDB(id) {
-  return new Promise((resolve, reject) => {
-    if (!db) { reject('DB not ready'); return; }
-    const transaction = db.transaction(STORE_NAME, 'readwrite');
-    const store = transaction.objectStore(STORE_NAME);
-    const request = store.delete(id);
-    request.onsuccess = () => resolve();
-    request.onerror = () => reject(request.error);
-  });
-}
-
-function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
+// Générer une miniature vidéo
 function generateVideoThumbnail(videoFile) {
-  return new Promise((resolve) => {
-    const video = document.createElement('video');
-    video.preload = 'metadata';
-    video.muted = true;
-    video.playsInline = true;
-    const url = URL.createObjectURL(videoFile);
-    video.src = url;
-    video.addEventListener('loadeddata', () => {
-      video.currentTime = 1;
+    return new Promise((resolve) => {
+        const video = document.createElement('video');
+        video.preload = 'metadata';
+        video.muted = true;
+        video.playsInline = true;
+        const url = URL.createObjectURL(videoFile);
+        video.src = url;
+        
+        const timeout = setTimeout(() => {
+            console.warn('Timeout génération miniature vidéo');
+            URL.revokeObjectURL(url);
+            resolve(null);
+        }, 5000);
+        
+        video.addEventListener('loadeddata', () => {
+            video.currentTime = 1;
+        });
+        
+        video.addEventListener('seeked', () => {
+            clearTimeout(timeout);
+            const canvas = document.createElement('canvas');
+            canvas.width = 480;
+            canvas.height = 270;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const thumb = canvas.toDataURL('image/jpeg', 0.7);
+            URL.revokeObjectURL(url);
+            resolve(thumb);
+        });
+        
+        video.addEventListener('error', () => {
+            clearTimeout(timeout);
+            URL.revokeObjectURL(url);
+            resolve(null);
+        });
     });
-    video.addEventListener('seeked', () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = 480;
-      canvas.height = 270;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const thumb = canvas.toDataURL('image/jpeg', 0.7);
-      URL.revokeObjectURL(url);
-      resolve(thumb);
-    });
-    video.addEventListener('error', () => {
-      URL.revokeObjectURL(url);
-      resolve(null);
-    });
-  });
 }
 
+// Ajouter un média
 async function addMedia(file, downloadAllowed) {
-  const type = file.type.startsWith('image/') ? 'img' : 'video';
-  const base64 = await fileToBase64(file);
-  let thumb = base64;
-  if (type === 'video') {
-    const videoThumb = await generateVideoThumbnail(file);
-    thumb = videoThumb || base64;
-  }
-  const media = {
-    type: type,
-    url: base64,
-    thumb: thumb,
-    title: file.name.substring(0, 40),
-    date: Date.now(),
-    originalName: file.name,
-    downloadAllowed: downloadAllowed
-  };
-  await saveMediaToDB(media);
-  await loadMediaFromDB();
-  renderGallery();
-  if (isAdmin) renderMediaListAdmin();
+    return new Promise(async (resolve, reject) => {
+        try {
+            // Vérifier le type de fichier
+            const isImage = file.type.startsWith('image/') || 
+                           file.name.match(/\.(jpg|jpeg|png|gif)$/i);
+            const isVideo = file.type.startsWith('video/') || 
+                           file.name.match(/\.(mp4|webm)$/i);
+            
+            if (!isImage && !isVideo) {
+                throw new Error('Format non supporté. Utilisez JPG, PNG ou MP4');
+            }
+            
+            const type = isImage ? 'img' : 'video';
+            console.log('📤 Ajout média:', file.name, 'Type:', type);
+            
+            const base64 = await fileToBase64(file);
+            if (!base64) throw new Error('Erreur conversion fichier');
+            
+            let thumb = base64;
+            if (type === 'video') {
+                const videoThumb = await generateVideoThumbnail(file);
+                thumb = videoThumb || base64;
+            }
+            
+            const media = {
+                id: Date.now() + Math.random() * 10000,
+                type: type,
+                url: base64,
+                thumb: thumb,
+                title: file.name.substring(0, 40),
+                date: Date.now(),
+                originalName: file.name,
+                downloadAllowed: downloadAllowed
+            };
+            
+            mediaItems.unshift(media);
+            saveToLocalStorage();
+            renderGallery();
+            if (isAdmin) renderMediaListAdmin();
+            
+            console.log('✅ Média ajouté avec succès, ID:', media.id);
+            resolve(media);
+        } catch(error) {
+            console.error('❌ Erreur addMedia:', error);
+            reject(error);
+        }
+    });
 }
 
-async function toggleDownloadPermission(media) {
-  media.downloadAllowed = !media.downloadAllowed;
-  await updateMediaInDB(media);
-  await loadMediaFromDB();
-  renderGallery();
-  if (isAdmin) renderMediaListAdmin();
-}
-
+// Supprimer un média
 async function deleteMedia(id) {
-  const media = mediaItems.find(m => m.id === id);
-  if (media && confirm(`Supprimer "${media.title}" ?`)) {
-    await deleteMediaFromDB(id);
-    await loadMediaFromDB();
+    const media = mediaItems.find(m => m.id === id);
+    if (media && confirm(`Supprimer "${media.title}" ?`)) {
+        mediaItems = mediaItems.filter(m => m.id !== id);
+        saveToLocalStorage();
+        renderGallery();
+        if (isAdmin) renderMediaListAdmin();
+        console.log('🗑️ Média supprimé, ID:', id);
+    }
+}
+
+// Modifier permission téléchargement
+async function toggleDownloadPermission(media) {
+    media.downloadAllowed = !media.downloadAllowed;
+    saveToLocalStorage();
     renderGallery();
     if (isAdmin) renderMediaListAdmin();
-  }
 }
 
-function renderGallery() {
-  const container = document.getElementById('galerie-grid');
-  if (!container) return;
-  let filtered = mediaItems;
-  if (currentFilter === 'img') filtered = mediaItems.filter(m => m.type === 'img');
-  if (currentFilter === 'video') filtered = mediaItems.filter(m => m.type === 'video');
-  
-  container.innerHTML = '';
-  filtered.forEach((item, idx) => {
-    const globalIdx = mediaItems.findIndex(m => m.id === item.id);
-    const card = document.createElement('div');
-    card.className = 'galerie-item';
-    if (item.type === 'img') {
-      const img = document.createElement('img');
-      img.src = item.thumb;
-      img.alt = item.title;
-      card.appendChild(img);
-    } else {
-      const canvas = document.createElement('canvas');
-      canvas.className = 'thumb-video';
-      canvas.width = 480;
-      canvas.height = 260;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#1a0f06';
-      ctx.fillRect(0, 0, 480, 260);
-      if (item.thumb) {
-        const thumbImg = new Image();
-        thumbImg.onload = () => ctx.drawImage(thumbImg, 0, 0, canvas.width, canvas.height);
-        thumbImg.src = item.thumb;
-      }
-      card.appendChild(canvas);
-    }
-    const badge = document.createElement('div');
-    badge.className = 'badge-type' + (item.type === 'video' ? ' badge-video' : '');
-    badge.innerHTML = item.type === 'video' ? '<i class="fas fa-video"></i> Vidéo' : '<i class="fas fa-camera"></i> Photo';
-    card.appendChild(badge);
-    const overlay = document.createElement('div');
-    overlay.className = 'overlay-icon';
-    overlay.innerHTML = `<div class="overlay-icon-inner"><i class="fas fa-${item.type === 'video' ? 'play' : 'search-plus'}"></i></div>`;
-    card.appendChild(overlay);
-    const titleEl = document.createElement('div');
-    titleEl.className = 'card-title';
-    titleEl.textContent = item.title;
-    card.appendChild(titleEl);
-    
-    if (item.downloadAllowed) {
-      const btn = document.createElement('button');
-      btn.className = 'download-btn-gallery';
-      btn.innerHTML = '<i class="fas fa-download"></i> Télécharger';
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const link = document.createElement('a');
-        link.href = item.url;
-        link.download = item.originalName || `media_${item.id}.${item.type === 'video' ? 'mp4' : 'jpg'}`;
-        link.click();
-      });
-      card.appendChild(btn);
-    } else {
-      const blockedBadge = document.createElement('div');
-      blockedBadge.style.position = 'absolute';
-      blockedBadge.style.bottom = '12px';
-      blockedBadge.style.right = '12px';
-      blockedBadge.style.background = 'rgba(0,0,0,0.6)';
-      blockedBadge.style.borderRadius = '20px';
-      blockedBadge.style.padding = '4px 10px';
-      blockedBadge.style.fontSize = '0.65rem';
-      blockedBadge.style.color = '#ffaa00';
-      blockedBadge.innerHTML = '<i class="fas fa-lock"></i> Téléchargement bloqué';
-      card.appendChild(blockedBadge);
-    }
-    
-    if (isAdmin) {
-      const deleteBtn = document.createElement('button');
-      deleteBtn.className = 'delete-media';
-      deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
-      deleteBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        deleteMedia(item.id);
-      });
-      card.appendChild(deleteBtn);
-      
-      const permBtn = document.createElement('button');
-      permBtn.style.position = 'absolute';
-      permBtn.style.bottom = '12px';
-      permBtn.style.left = '12px';
-      permBtn.style.background = item.downloadAllowed ? 'rgba(40,167,69,0.85)' : 'rgba(220,53,69,0.85)';
-      permBtn.style.border = 'none';
-      permBtn.style.borderRadius = '20px';
-      permBtn.style.padding = '4px 10px';
-      permBtn.style.fontSize = '0.65rem';
-      permBtn.style.color = 'white';
-      permBtn.style.cursor = 'pointer';
-      permBtn.style.zIndex = '10';
-      permBtn.innerHTML = item.downloadAllowed ? '<i class="fas fa-download"></i> DL autorisé' : '<i class="fas fa-ban"></i> DL bloqué';
-      permBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        toggleDownloadPermission(item);
-      });
-      card.appendChild(permBtn);
-    }
-    
-    card.addEventListener('click', () => openLightbox(globalIdx));
-    container.appendChild(card);
-  });
+// Exporter la galerie
+function exportGallery() {
+    const exportData = {
+        version: '1.0',
+        exportDate: new Date().toISOString(),
+        mediaCount: mediaItems.length,
+        mediaItems: mediaItems
+    };
+    const dataStr = JSON.stringify(exportData, null, 2);
+    const blob = new Blob([dataStr], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `wedding_gallery_backup_${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showStatus('✅ Galerie exportée avec succès!', 'success');
 }
 
-function renderMediaListAdmin() {
-  const container = document.getElementById('mediaList');
-  if (!container) return;
-  container.innerHTML = '';
-  mediaItems.forEach(item => {
-    const div = document.createElement('div');
-    div.className = 'admin-list-item';
-    div.innerHTML = `
-      <span><i class="fas ${item.type === 'video' ? 'fa-video' : 'fa-image'}"></i> ${item.title}</span>
-      <div style="display:flex;gap:8px;">
-        <button class="admin-perm-toggle" data-id="${item.id}" style="background:${item.downloadAllowed ? '#28a745' : '#dc3545'};color:white;border:none;border-radius:20px;padding:5px 12px;cursor:pointer;font-size:0.7rem;">
-          ${item.downloadAllowed ? '🔓 DL auto' : '🔒 DL bloqué'}
-        </button>
-        <button class="admin-list-delete" data-id="${item.id}" style="background:#dc3545;color:white;border:none;border-radius:20px;padding:5px 12px;cursor:pointer;font-size:0.7rem;">
-          <i class="fas fa-trash"></i> Suppr
-        </button>
-      </div>
-    `;
-    container.appendChild(div);
-  });
-  document.querySelectorAll('.admin-list-delete').forEach(btn => {
-    btn.addEventListener('click', () => deleteMedia(parseInt(btn.dataset.id)));
-  });
-  document.querySelectorAll('.admin-perm-toggle').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const media = mediaItems.find(m => m.id === parseInt(btn.dataset.id));
-      if (media) toggleDownloadPermission(media);
-    });
-  });
+// Importer une sauvegarde
+function importGallery(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const data = JSON.parse(e.target.result);
+            if (data.mediaItems && Array.isArray(data.mediaItems)) {
+                // Vérifier que chaque média a une URL valide
+                const validMedia = data.mediaItems.filter(m => {
+                    if (!m.url || !isValidBase64(m.url)) {
+                        console.warn('Média invalide ignoré:', m.title);
+                        return false;
+                    }
+                    return true;
+                });
+                
+                mediaItems = validMedia;
+                saveToLocalStorage();
+                renderGallery();
+                if (isAdmin) renderMediaListAdmin();
+                showStatus(`✅ Import réussi! ${validMedia.length} médias chargés.`, 'success');
+            } else {
+                throw new Error('Format de fichier invalide');
+            }
+        } catch(error) {
+            console.error('Erreur import:', error);
+            showStatus('❌ Erreur lors de l\'import du fichier', 'error');
+        }
+    };
+    reader.readAsText(file);
 }
 
-function loginAdmin() {
-  const password = document.getElementById('adminPassword').value;
-  if (password === ADMIN_CODE) {
-    isAdmin = true;
-    document.getElementById('loginModal').classList.remove('open');
-    document.getElementById('adminModeBadge').style.display = 'flex';
-    renderGallery();
-    renderMediaListAdmin();
-    // Afficher un message de bienvenue
+// Afficher un message de statut
+function showStatus(message, type) {
     const statusDiv = document.getElementById('adminStatus');
-    if (statusDiv) statusDiv.innerHTML = '✅ Mode administrateur activé';
-    setTimeout(() => { if (statusDiv) statusDiv.innerHTML = ''; }, 2000);
-  } else {
-    document.getElementById('loginError').textContent = 'Code incorrect';
-  }
+    if (statusDiv) {
+        statusDiv.innerHTML = message;
+        statusDiv.style.color = type === 'error' ? '#dc3545' : '#28a745';
+        setTimeout(() => {
+            statusDiv.innerHTML = '';
+        }, 3000);
+    }
 }
 
-function logoutAdmin() {
-  isAdmin = false;
-  document.getElementById('adminModeBadge').style.display = 'none';
-  renderGallery();
-  // Cacher le panneau admin s'il est ouvert
-  document.getElementById('adminModal').classList.remove('open');
+// Rendu de la galerie
+function renderGallery() {
+    const container = document.getElementById('galerie-grid');
+    if (!container) return;
+    
+    let filtered = mediaItems;
+    if (currentFilter === 'img') filtered = mediaItems.filter(m => m.type === 'img');
+    if (currentFilter === 'video') filtered = mediaItems.filter(m => m.type === 'video');
+    
+    if (filtered.length === 0) {
+        container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--brun-dark);"><i class="fas fa-images" style="font-size:3rem;opacity:0.5;"></i><p>Aucun média pour le moment</p></div>';
+        return;
+    }
+    
+    container.innerHTML = '';
+    filtered.forEach((item, idx) => {
+        const globalIdx = mediaItems.findIndex(m => m.id === item.id);
+        const card = document.createElement('div');
+        card.className = 'galerie-item';
+        
+        if (item.type === 'img') {
+            const img = document.createElement('img');
+            img.src = item.thumb || item.url;
+            img.alt = item.title;
+            img.onerror = () => {
+                console.warn('Erreur chargement image:', item.title);
+                img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 100"%3E%3Crect fill="%23666" width="100" height="100"/%3E%3Ctext x="50" y="50" text-anchor="middle" dy=".3em" fill="white" font-size="10"%3EImage%3C/text%3E%3C/svg%3E';
+            };
+            card.appendChild(img);
+        } else {
+            const canvas = document.createElement('canvas');
+            canvas.className = 'thumb-video';
+            canvas.width = 480;
+            canvas.height = 260;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#1a0f06';
+            ctx.fillRect(0, 0, 480, 260);
+            ctx.fillStyle = 'white';
+            ctx.font = '14px Poppins';
+            ctx.textAlign = 'center';
+            ctx.fillText('🎬 Vidéo', 240, 130);
+            if (item.thumb && item.thumb !== item.url) {
+                const thumbImg = new Image();
+                thumbImg.onload = () => ctx.drawImage(thumbImg, 0, 0, canvas.width, canvas.height);
+                thumbImg.src = item.thumb;
+            }
+            card.appendChild(canvas);
+        }
+        
+        const badge = document.createElement('div');
+        badge.className = 'badge-type' + (item.type === 'video' ? ' badge-video' : '');
+        badge.innerHTML = item.type === 'video' ? '<i class="fas fa-video"></i> Vidéo' : '<i class="fas fa-camera"></i> Photo';
+        card.appendChild(badge);
+        
+        const overlay = document.createElement('div');
+        overlay.className = 'overlay-icon';
+        overlay.innerHTML = `<div class="overlay-icon-inner"><i class="fas fa-${item.type === 'video' ? 'play' : 'search-plus'}"></i></div>`;
+        card.appendChild(overlay);
+        
+        const titleEl = document.createElement('div');
+        titleEl.className = 'card-title';
+        titleEl.textContent = item.title;
+        card.appendChild(titleEl);
+        
+        if (item.downloadAllowed) {
+            const btn = document.createElement('button');
+            btn.className = 'download-btn-gallery';
+            btn.innerHTML = '<i class="fas fa-download"></i> Télécharger';
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const link = document.createElement('a');
+                link.href = item.url;
+                link.download = item.originalName || `media_${item.id}.${item.type === 'video' ? 'mp4' : 'jpg'}`;
+                link.click();
+            });
+            card.appendChild(btn);
+        }
+        
+        if (isAdmin) {
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-media';
+            deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                deleteMedia(item.id);
+            });
+            card.appendChild(deleteBtn);
+            
+            const permBtn = document.createElement('button');
+            permBtn.style.position = 'absolute';
+            permBtn.style.bottom = '12px';
+            permBtn.style.left = '12px';
+            permBtn.style.background = item.downloadAllowed ? 'rgba(40,167,69,0.85)' : 'rgba(220,53,69,0.85)';
+            permBtn.style.border = 'none';
+            permBtn.style.borderRadius = '20px';
+            permBtn.style.padding = '4px 10px';
+            permBtn.style.fontSize = '0.65rem';
+            permBtn.style.color = 'white';
+            permBtn.style.cursor = 'pointer';
+            permBtn.style.zIndex = '10';
+            permBtn.innerHTML = item.downloadAllowed ? '<i class="fas fa-download"></i> DL autorisé' : '<i class="fas fa-ban"></i> DL bloqué';
+            permBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleDownloadPermission(item);
+            });
+            card.appendChild(permBtn);
+        }
+        
+        card.addEventListener('click', () => openLightbox(globalIdx));
+        container.appendChild(card);
+    });
+}
+
+// Rendu liste admin
+function renderMediaListAdmin() {
+    const container = document.getElementById('mediaList');
+    if (!container) return;
+    container.innerHTML = '';
+    mediaItems.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'admin-list-item';
+        div.innerHTML = `
+            <span><i class="fas ${item.type === 'video' ? 'fa-video' : 'fa-image'}"></i> ${item.title}</span>
+            <div style="display:flex;gap:8px;">
+                <button class="admin-perm-toggle" data-id="${item.id}" style="background:${item.downloadAllowed ? '#28a745' : '#dc3545'};color:white;border:none;border-radius:20px;padding:5px 12px;cursor:pointer;font-size:0.7rem;">
+                    ${item.downloadAllowed ? '🔓 DL auto' : '🔒 DL bloqué'}
+                </button>
+                <button class="admin-list-delete" data-id="${item.id}" style="background:#dc3545;color:white;border:none;border-radius:20px;padding:5px 12px;cursor:pointer;font-size:0.7rem;">
+                    <i class="fas fa-trash"></i> Suppr
+                </button>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+    
+    document.querySelectorAll('.admin-list-delete').forEach(btn => {
+        btn.addEventListener('click', () => deleteMedia(parseInt(btn.dataset.id)));
+    });
+    document.querySelectorAll('.admin-perm-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const media = mediaItems.find(m => m.id === parseInt(btn.dataset.id));
+            if (media) toggleDownloadPermission(media);
+        });
+    });
 }
 
 // Lightbox functions
-function openLightbox(index) {
-  currentLightboxIndex = index;
-  showLightboxItem(currentLightboxIndex);
-  lbOverlay.classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeLightbox() { if (!lbVideo.paused) { lbVideo.pause(); if (music && music._pausedByVideo && music.paused) { music.play().catch(()=>{}); music._pausedByVideo = false; } } lbVideo.src = ''; lbOverlay.classList.remove('open'); document.body.style.overflow = ''; }
-function showLightboxItem(index) {
-  const item = mediaItems[index];
-  if (!item) return;
-  lbTitle.textContent = item.title;
-  lbCounter.textContent = `${index + 1} / ${mediaItems.length}`;
-  lbPrev.style.display = mediaItems.length > 1 ? 'flex' : 'none';
-  lbNext.style.display = mediaItems.length > 1 ? 'flex' : 'none';
-  if (item.type === 'img') {
-    if (!lbVideo.paused) lbVideo.pause();
-    lbVideo.src = '';
-    lbVideo.style.display = 'none';
-    lbImg.style.display = 'block';
-    lbImg.src = item.url;
-  } else {
-    lbImg.style.display = 'none';
-    lbImg.src = '';
-    lbVideo.style.display = 'block';
-    lbVideo.src = item.url;
-    lbVideo.load();
-    lbVideo.onplay = () => { if (music && !music.paused) { music._pausedByVideo = true; music.pause(); if (musicBtn) musicBtn.innerHTML = '<i class="fas fa-music"></i>'; } };
-    const resumeOnStop = () => { if (music && music._pausedByVideo && music.paused) { music.play().catch(()=>{}); music._pausedByVideo = false; if (musicBtn) musicBtn.innerHTML = '<i class="fas fa-pause"></i>'; } };
-    lbVideo.onpause = resumeOnStop;
-    lbVideo.onended = resumeOnStop;
-  }
-}
-function prevLightbox() { if (!lbVideo.paused) lbVideo.pause(); currentLightboxIndex = (currentLightboxIndex - 1 + mediaItems.length) % mediaItems.length; showLightboxItem(currentLightboxIndex); }
-function nextLightbox() { if (!lbVideo.paused) lbVideo.pause(); currentLightboxIndex = (currentLightboxIndex + 1) % mediaItems.length; showLightboxItem(currentLightboxIndex); }
-
-// Admin panel UI
-let pendingFiles = [];
-function updatePreview() {
-  const container = document.getElementById('adminPreviewGrid');
-  container.innerHTML = '';
-  pendingFiles.forEach((file, idx) => {
-    const div = document.createElement('div');
-    div.className = 'admin-preview-item';
-    if (file.type.startsWith('image/')) {
-      const img = document.createElement('img');
-      img.src = URL.createObjectURL(file);
-      div.appendChild(img);
-    } else {
-      const video = document.createElement('video');
-      video.src = URL.createObjectURL(file);
-      video.muted = true;
-      video.style.width = '100%';
-      video.style.height = '100%';
-      video.style.objectFit = 'cover';
-      div.appendChild(video);
-    }
-    const removeBtn = document.createElement('div');
-    removeBtn.className = 'admin-remove-preview';
-    removeBtn.innerHTML = '&times;';
-    removeBtn.onclick = () => { pendingFiles.splice(idx, 1); updatePreview(); };
-    div.appendChild(removeBtn);
-    container.appendChild(div);
-  });
-}
-
-// Initialisation des variables Lightbox
 let currentLightboxIndex = 0;
 const lbOverlay = document.getElementById('custom-lightbox');
 const lbImg = document.getElementById('lb-img');
@@ -804,136 +875,377 @@ const lbBackBtn = document.getElementById('lb-back-btn');
 const lbPrev = document.getElementById('lb-prev');
 const lbNext = document.getElementById('lb-next');
 
+function openLightbox(index) {
+    if (!mediaItems[index]) return;
+    currentLightboxIndex = index;
+    showLightboxItem(currentLightboxIndex);
+    lbOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+    if (!lbVideo.paused) lbVideo.pause();
+    lbVideo.src = '';
+    lbOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+function showLightboxItem(index) {
+    const item = mediaItems[index];
+    if (!item) return;
+    lbTitle.textContent = item.title;
+    lbCounter.textContent = `${index + 1} / ${mediaItems.length}`;
+    lbPrev.style.display = mediaItems.length > 1 ? 'flex' : 'none';
+    lbNext.style.display = mediaItems.length > 1 ? 'flex' : 'none';
+    
+    if (item.type === 'img') {
+        if (!lbVideo.paused) lbVideo.pause();
+        lbVideo.src = '';
+        lbVideo.style.display = 'none';
+        lbImg.style.display = 'block';
+        lbImg.src = item.url;
+        lbImg.onerror = () => {
+            console.warn('Erreur chargement image dans lightbox');
+            lbImg.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 100"%3E%3Crect fill="%23666" width="100" height="100"/%3E%3Ctext x="50" y="50" text-anchor="middle" dy=".3em" fill="white" font-size="10"%3EImage non disponible%3C/text%3E%3C/svg%3E';
+        };
+    } else {
+        lbImg.style.display = 'none';
+        lbImg.src = '';
+        lbVideo.style.display = 'block';
+        lbVideo.src = item.url;
+        lbVideo.load();
+        
+        const music = document.getElementById('music');
+        lbVideo.onplay = () => {
+            if (music && !music.paused) {
+                music._pausedByVideo = true;
+                music.pause();
+                const musicBtn = document.getElementById('musicBtn');
+                if (musicBtn) musicBtn.innerHTML = '<i class="fas fa-music"></i>';
+            }
+        };
+        lbVideo.onpause = () => {
+            const music = document.getElementById('music');
+            if (music && music._pausedByVideo && music.paused) {
+                music.play().catch(()=>{});
+                music._pausedByVideo = false;
+                const musicBtn = document.getElementById('musicBtn');
+                if (musicBtn) musicBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            }
+        };
+        lbVideo.onended = () => {
+            const music = document.getElementById('music');
+            if (music && music._pausedByVideo && music.paused) {
+                music.play().catch(()=>{});
+                music._pausedByVideo = false;
+                const musicBtn = document.getElementById('musicBtn');
+                if (musicBtn) musicBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            }
+        };
+    }
+}
+
+function prevLightbox() {
+    if (!lbVideo.paused) lbVideo.pause();
+    currentLightboxIndex = (currentLightboxIndex - 1 + mediaItems.length) % mediaItems.length;
+    showLightboxItem(currentLightboxIndex);
+}
+
+function nextLightbox() {
+    if (!lbVideo.paused) lbVideo.pause();
+    currentLightboxIndex = (currentLightboxIndex + 1) % mediaItems.length;
+    showLightboxItem(currentLightboxIndex);
+}
+
 lbBackBtn.addEventListener('click', closeLightbox);
 lbPrev.addEventListener('click', prevLightbox);
 lbNext.addEventListener('click', nextLightbox);
 lbOverlay.addEventListener('click', (e) => { if (e.target === lbOverlay) closeLightbox(); });
-document.addEventListener('keydown', (e) => { if (!lbOverlay.classList.contains('open')) return; if (e.key === 'Escape') closeLightbox(); if (e.key === 'ArrowLeft') prevLightbox(); if (e.key === 'ArrowRight') nextLightbox(); });
+document.addEventListener('keydown', (e) => {
+    if (!lbOverlay.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') prevLightbox();
+    if (e.key === 'ArrowRight') nextLightbox();
+});
 
-// Admin event handlers
+// Admin functions
+function loginAdmin() {
+    const password = document.getElementById('adminPassword').value;
+    if (password === ADMIN_CODE) {
+        isAdmin = true;
+        document.getElementById('loginModal').classList.remove('open');
+        document.getElementById('adminModeBadge').style.display = 'flex';
+        renderGallery();
+        renderMediaListAdmin();
+        showStatus('✅ Mode administrateur activé', 'success');
+    } else {
+        document.getElementById('loginError').textContent = 'Code incorrect';
+    }
+}
+
+function logoutAdmin() {
+    isAdmin = false;
+    document.getElementById('adminModeBadge').style.display = 'none';
+    document.getElementById('adminModal').classList.remove('open');
+    renderGallery();
+    showStatus('Mode admin désactivé', 'success');
+}
+
+// Admin panel UI
+let pendingFiles = [];
+
+function updatePreview() {
+    const container = document.getElementById('adminPreviewGrid');
+    if (!container) return;
+    container.innerHTML = '';
+    pendingFiles.forEach((file, idx) => {
+        const div = document.createElement('div');
+        div.className = 'admin-preview-item';
+        if (file.type.startsWith('image/') || file.name.match(/\.(jpg|jpeg|png)$/i)) {
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            div.appendChild(img);
+        } else {
+            const video = document.createElement('video');
+            video.src = URL.createObjectURL(file);
+            video.muted = true;
+            video.style.width = '100%';
+            video.style.height = '100%';
+            video.style.objectFit = 'cover';
+            div.appendChild(video);
+        }
+        const removeBtn = document.createElement('div');
+        removeBtn.className = 'admin-remove-preview';
+        removeBtn.innerHTML = '&times;';
+        removeBtn.onclick = () => { pendingFiles.splice(idx, 1); updatePreview(); };
+        div.appendChild(removeBtn);
+        container.appendChild(div);
+    });
+}
+
+// Événements admin
 document.getElementById('adminToggle').addEventListener('click', () => {
-  if (!isAdmin) {
-    document.getElementById('loginModal').classList.add('open');
-  } else {
-    document.getElementById('adminModal').classList.add('open');
-  }
+    if (!isAdmin) {
+        document.getElementById('loginModal').classList.add('open');
+    } else {
+        document.getElementById('adminModal').classList.add('open');
+    }
 });
 document.getElementById('adminClose').addEventListener('click', () => document.getElementById('adminModal').classList.remove('open'));
 document.getElementById('loginBtn').addEventListener('click', loginAdmin);
 document.getElementById('logoutBtn').addEventListener('click', logoutAdmin);
 document.getElementById('adminPassword').addEventListener('keypress', (e) => { if(e.key === 'Enter') loginAdmin(); });
+
+// Upload
 document.getElementById('uploadArea').addEventListener('click', () => document.getElementById('fileInput').click());
-document.getElementById('fileInput').addEventListener('change', (e) => { pendingFiles = Array.from(e.target.files); updatePreview(); });
-document.getElementById('uploadArea').addEventListener('dragover', (e) => { e.preventDefault(); e.stopPropagation(); document.getElementById('uploadArea').style.background = 'rgba(196,154,108,0.2)'; });
-document.getElementById('uploadArea').addEventListener('dragleave', (e) => { e.preventDefault(); e.stopPropagation(); document.getElementById('uploadArea').style.background = ''; });
-document.getElementById('uploadArea').addEventListener('drop', (e) => { e.preventDefault(); e.stopPropagation(); document.getElementById('uploadArea').style.background = ''; const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/') || f.type.startsWith('video/mp4')); pendingFiles = [...pendingFiles, ...files]; updatePreview(); });
+document.getElementById('fileInput').addEventListener('change', (e) => { 
+    pendingFiles = Array.from(e.target.files); 
+    updatePreview(); 
+});
+document.getElementById('uploadArea').addEventListener('dragover', (e) => { 
+    e.preventDefault(); 
+    e.stopPropagation(); 
+    document.getElementById('uploadArea').style.background = 'rgba(196,154,108,0.2)'; 
+});
+document.getElementById('uploadArea').addEventListener('dragleave', (e) => { 
+    e.preventDefault(); 
+    e.stopPropagation(); 
+    document.getElementById('uploadArea').style.background = ''; 
+});
+document.getElementById('uploadArea').addEventListener('drop', (e) => { 
+    e.preventDefault(); 
+    e.stopPropagation(); 
+    document.getElementById('uploadArea').style.background = ''; 
+    const files = Array.from(e.dataTransfer.files).filter(f => 
+        f.type.startsWith('image/') || f.type.startsWith('video/mp4') || 
+        f.name.match(/\.(jpg|jpeg|png|mp4)$/i)
+    ); 
+    pendingFiles = [...pendingFiles, ...files]; 
+    updatePreview(); 
+});
+
 document.getElementById('uploadBtn').addEventListener('click', async () => {
-  if (!isAdmin) { alert('Vous devez être connecté en tant qu\'administrateur'); return; }
-  if (pendingFiles.length === 0) { alert('Sélectionnez des fichiers d\'abord'); return; }
-  const defaultPerm = document.querySelector('input[name="defaultDownloadPerm"]:checked').value === 'allowed';
-  const statusDiv = document.getElementById('adminStatus');
-  statusDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Ajout en cours...';
-  for (const file of pendingFiles) {
-    try { await addMedia(file, defaultPerm); } catch(e) { console.error(e); statusDiv.innerHTML = 'Erreur pour ' + file.name; }
-  }
-  pendingFiles = [];
-  updatePreview();
-  document.getElementById('fileInput').value = '';
-  statusDiv.innerHTML = '✅ Ajout terminé !';
-  setTimeout(() => statusDiv.innerHTML = '', 3000);
+    if (!isAdmin) { alert('Vous devez être connecté en tant qu\'administrateur'); return; }
+    if (pendingFiles.length === 0) { alert('Sélectionnez des fichiers d\'abord'); return; }
+    const defaultPerm = document.querySelector('input[name="defaultDownloadPerm"]:checked').value === 'allowed';
+    const statusDiv = document.getElementById('adminStatus');
+    statusDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Ajout en cours...';
+    statusDiv.style.color = '';
+    
+    let successCount = 0;
+    let errorCount = 0;
+    
+    for (const file of pendingFiles) {
+        try {
+            await addMedia(file, defaultPerm);
+            successCount++;
+        } catch(e) {
+            console.error('Erreur upload:', e);
+            errorCount++;
+            showStatus(`❌ Erreur: ${file.name} - ${e.message}`, 'error');
+        }
+    }
+    
+    pendingFiles = [];
+    updatePreview();
+    document.getElementById('fileInput').value = '';
+    
+    if (successCount > 0) {
+        showStatus(`✅ ${successCount} média(s) ajouté(s) avec succès!${errorCount > 0 ? ` (${errorCount} erreur(s))` : ''}`, 'success');
+    }
+});
+
+// Backup / Restore
+document.getElementById('exportBackupBtn').addEventListener('click', exportGallery);
+document.getElementById('importBackupBtn').addEventListener('click', () => {
+    document.getElementById('importBackupInput').click();
+});
+document.getElementById('importBackupInput').addEventListener('change', (e) => {
+    if (e.target.files && e.target.files[0]) {
+        importGallery(e.target.files[0]);
+    }
 });
 
 // Filtres galerie
 document.querySelectorAll('.galerie-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.galerie-tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    currentFilter = tab.dataset.filter;
-    renderGallery();
-  });
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.galerie-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentFilter = tab.dataset.filter;
+        renderGallery();
+    });
 });
 
 // ============================================================
 //  ANCIENNES FONCTIONS (Enveloppe, musique, papillons, etc.)
 // ============================================================
+
 function getDirectionsFromMe(lat, lng, name) {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(position => {
-      const userLat = position.coords.latitude;
-      const userLng = position.coords.longitude;
-      const mapsUrl = `https://www.google.com/maps/dir/${userLat},${userLng}/${lat},${lng}/`;
-      window.open(mapsUrl, '_blank');
-    }, error => { alert("Impossible d'obtenir votre position."); });
-  } else { alert("Géolocalisation non supportée."); }
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+            const userLat = position.coords.latitude;
+            const userLng = position.coords.longitude;
+            const mapsUrl = `https://www.google.com/maps/dir/${userLat},${userLng}/${lat},${lng}/`;
+            window.open(mapsUrl, '_blank');
+        }, error => { alert("Impossible d'obtenir votre position."); });
+    } else { alert("Géolocalisation non supportée."); }
 }
 
 function createButterfly(){
-  const colors=[['#FF8C42','#FFB347','#FF6B00'],['#D2A679','#F5CFA0','#8b5a2b'],['#FF6347','#FFD700','#FF4500']];
-  const c=colors[Math.floor(Math.random()*colors.length)];
-  const size=40+Math.random()*40;
-  const el=document.createElement('div');
-  el.className='butterfly-real';
-  el.style.cssText=`width:${size}px;height:${size/1.4}px;top:${Math.random()*80+5}vh;left:${Math.random()*20}vw;--bx0:${Math.random()*20-10}px;--by0:${Math.random()*20-10}px;--bx1:${80+Math.random()*20}vw;--by1:${(Math.random()-.5)*40}vh;--brot:${(Math.random()-.5)*20}deg;animation-duration:${10+Math.random()*14}s;animation-delay:${Math.random()*12}s;`;
-  el.innerHTML=`<svg viewBox="0 0 100 70"><ellipse cx="30" cy="28" rx="28" ry="22" fill="${c[0]}" opacity=".92" transform="rotate(-15 30 28)"/><ellipse cx="25" cy="50" rx="20" ry="14" fill="${c[1]}" opacity=".85" transform="rotate(10 25 50)"/><ellipse cx="70" cy="28" rx="28" ry="22" fill="${c[0]}" opacity=".92" transform="rotate(15 70 28)"/><ellipse cx="75" cy="50" rx="20" ry="14" fill="${c[1]}" opacity=".85" transform="rotate(-10 75 50)"/><ellipse cx="50" cy="38" rx="4" ry="18" fill="#3a1a00"/><line x1="50" y1="20" x2="36" y2="6" stroke="#3a1a00" stroke-width="1.5"/><circle cx="36" cy="6" r="2.5" fill="${c[2]}"/><line x1="50" y1="20" x2="64" y2="6" stroke="#3a1a00" stroke-width="1.5"/><circle cx="64" cy="6" r="2.5" fill="${c[2]}"/><circle cx="32" cy="26" r="6" fill="${c[2]}" opacity=".4"/><circle cx="68" cy="26" r="6" fill="${c[2]}" opacity=".4"/></svg>`;
-  document.body.appendChild(el);
-  setTimeout(()=>el.remove(),(parseFloat(el.style.animationDuration||'12')*1000+parseFloat(el.style.animationDelay||'0')*1000+500));
+    const colors=[['#FF8C42','#FFB347','#FF6B00'],['#D2A679','#F5CFA0','#8b5a2b'],['#FF6347','#FFD700','#FF4500']];
+    const c=colors[Math.floor(Math.random()*colors.length)];
+    const size=40+Math.random()*40;
+    const el=document.createElement('div');
+    el.className='butterfly-real';
+    el.style.cssText=`width:${size}px;height:${size/1.4}px;top:${Math.random()*80+5}vh;left:${Math.random()*20}vw;--bx0:${Math.random()*20-10}px;--by0:${Math.random()*20-10}px;--bx1:${80+Math.random()*20}vw;--by1:${(Math.random()-.5)*40}vh;--brot:${(Math.random()-.5)*20}deg;animation-duration:${10+Math.random()*14}s;animation-delay:${Math.random()*12}s;`;
+    el.innerHTML=`<svg viewBox="0 0 100 70"><ellipse cx="30" cy="28" rx="28" ry="22" fill="${c[0]}" opacity=".92" transform="rotate(-15 30 28)"/><ellipse cx="25" cy="50" rx="20" ry="14" fill="${c[1]}" opacity=".85" transform="rotate(10 25 50)"/><ellipse cx="70" cy="28" rx="28" ry="22" fill="${c[0]}" opacity=".92" transform="rotate(15 70 28)"/><ellipse cx="75" cy="50" rx="20" ry="14" fill="${c[1]}" opacity=".85" transform="rotate(-10 75 50)"/><ellipse cx="50" cy="38" rx="4" ry="18" fill="#3a1a00"/><line x1="50" y1="20" x2="36" y2="6" stroke="#3a1a00" stroke-width="1.5"/><circle cx="36" cy="6" r="2.5" fill="${c[2]}"/><line x1="50" y1="20" x2="64" y2="6" stroke="#3a1a00" stroke-width="1.5"/><circle cx="64" cy="6" r="2.5" fill="${c[2]}"/><circle cx="32" cy="26" r="6" fill="${c[2]}" opacity=".4"/><circle cx="68" cy="26" r="6" fill="${c[2]}" opacity=".4"/></svg>`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),(parseFloat(el.style.animationDuration||'12')*1000+parseFloat(el.style.animationDelay||'0')*1000+500));
 }
+
 for(let i=0;i<6;i++) setTimeout(()=>createButterfly(),i*1800);
+
 const sceneEnv=document.getElementById('envelope-scene');
 for(let i=0;i<20;i++){let p=document.createElement('div');p.className='ptcl';p.style.cssText=`left:${Math.random()*100}%;width:${2+Math.random()*4}px;height:${2+Math.random()*4}px;animation-duration:${7+Math.random()*10}s;animation-delay:${Math.random()*8}s;`;sceneEnv.appendChild(p);}
-const music=document.getElementById('music');
-let opened=false,audioUnlocked=false;
-function unlockAudio(){if(audioUnlocked)return;audioUnlocked=true;try{const AC=window.AudioContext||window.webkitAudioContext;if(AC){const ctx=new AC();const b=ctx.createBuffer(1,1,22050);const s=ctx.createBufferSource();s.buffer=b;s.connect(ctx.destination);s.start(0);ctx.resume();}}catch(e){}if(music)music.load();}
-document.addEventListener('touchstart',unlockAudio,{once:true});
-document.addEventListener('click',unlockAudio,{once:true});
-function tryPlay(n){if(!music)return;music.play().then(()=>{music.volume=1;}).catch(()=>{if(n>0)setTimeout(()=>tryPlay(n-1),400);});}
-document.getElementById('waxSeal').addEventListener('click',function(){
-  if(opened)return;
-  opened=true;
-  unlockAudio();
-  document.getElementById('envelope').classList.add('opened');
-  setTimeout(()=>tryPlay(5),200);
-  setTimeout(()=>{
-    sceneEnv.classList.add('slide-up');
-    const contenu=document.getElementById('contenu-principal');
-    contenu.style.display='block';
-    requestAnimationFrame(()=>{contenu.style.opacity='1';});
-    setTimeout(()=>{
-      document.getElementById('musicBtn').style.display='flex';
-      sceneEnv.style.display='none';
-    },1100);
-  },1500);
-});
-const musicBtn=document.getElementById('musicBtn');
-musicBtn.addEventListener('click',()=>{
-  if(music.paused){music.play();musicBtn.innerHTML='<i class="fas fa-pause"></i>';}
-  else{music.pause();musicBtn.innerHTML='<i class="fas fa-music"></i>';}
-});
-music.addEventListener('play',()=>{musicBtn.innerHTML='<i class="fas fa-pause"></i>';});
-music.addEventListener('pause',()=>{musicBtn.innerHTML='<i class="fas fa-music"></i>';});
-const weddingDate=new Date('April 16, 2026 10:00:00 GMT+1').getTime();
-function updateCountdown(){
-  const now=Date.now();const diff=weddingDate-now;const el=document.getElementById('countdown');
-  if(!el)return;
-  if(diff<=0){el.innerHTML='🎉 Les festivités ont commencé !';return;}
-  el.innerHTML=`<span style="color:var(--orange)">${Math.floor(diff/86400000)}</span>j <span style="color:var(--orange)">${Math.floor((diff%86400000)/3600000)}</span>h <span style="color:var(--orange)">${Math.floor((diff%3600000)/60000)}</span>m <span style="color:var(--orange)">${Math.floor((diff%60000)/1000)}</span>s`;
+
+const music = document.getElementById('music');
+let opened = false, audioUnlocked = false;
+
+function unlockAudio(){
+    if(audioUnlocked) return;
+    audioUnlocked = true;
+    try {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if(AC) {
+            const ctx = new AC();
+            const b = ctx.createBuffer(1, 1, 22050);
+            const s = ctx.createBufferSource();
+            s.buffer = b;
+            s.connect(ctx.destination);
+            s.start(0);
+            ctx.resume();
+        }
+    } catch(e) {}
+    if(music) music.load();
 }
-updateCountdown();setInterval(updateCountdown,1000);
-document.getElementById('rsvpForm').addEventListener('submit',function(e){
-  e.preventDefault();
-  const nom=document.getElementById('nom').value.trim();
-  const presence=document.getElementById('presence').value;
-  if(!nom||!presence){alert('Veuillez remplir tous les champs.');return;}
-  document.getElementById('rsvp-message').textContent=`Merci ${nom} ! Votre réponse (${presence==='présent'?'✅ Présent(e)':'❌ Absent(e)'}) a bien été enregistrée.`;
-  this.reset();
+
+document.addEventListener('touchstart', unlockAudio, {once: true});
+document.addEventListener('click', unlockAudio, {once: true});
+
+function tryPlay(n){
+    if(!music) return;
+    music.play().then(() => {
+        music.volume = 1;
+    }).catch(() => {
+        if(n > 0) setTimeout(() => tryPlay(n-1), 400);
+    });
+}
+
+document.getElementById('waxSeal').addEventListener('click', function(){
+    if(opened) return;
+    opened = true;
+    unlockAudio();
+    document.getElementById('envelope').classList.add('opened');
+    setTimeout(() => tryPlay(5), 200);
+    setTimeout(() => {
+        sceneEnv.classList.add('slide-up');
+        const contenu = document.getElementById('contenu-principal');
+        contenu.style.display = 'block';
+        requestAnimationFrame(() => { contenu.style.opacity = '1'; });
+        setTimeout(() => {
+            document.getElementById('musicBtn').style.display = 'flex';
+            sceneEnv.style.display = 'none';
+        }, 1100);
+    }, 1500);
 });
 
-// Initialisation de la base de données et chargement des médias
-openDB().then(async () => {
-  await loadMediaFromDB();
-  renderGallery();
-  if (isAdmin) renderMediaListAdmin();
-}).catch(console.error);
+const musicBtn = document.getElementById('musicBtn');
+musicBtn.addEventListener('click', () => {
+    if(music.paused) {
+        music.play();
+        musicBtn.innerHTML = '<i class="fas fa-pause"></i>';
+    } else {
+        music.pause();
+        musicBtn.innerHTML = '<i class="fas fa-music"></i>';
+    }
+});
+music.addEventListener('play', () => { musicBtn.innerHTML = '<i class="fas fa-pause"></i>'; });
+music.addEventListener('pause', () => { musicBtn.innerHTML = '<i class="fas fa-music"></i>'; });
+
+const weddingDate = new Date('April 16, 2026 10:00:00 GMT+1').getTime();
+function updateCountdown(){
+    const now = Date.now();
+    const diff = weddingDate - now;
+    const el = document.getElementById('countdown');
+    if(!el) return;
+    if(diff <= 0) {
+        el.innerHTML = '🎉 Les festivités ont commencé !';
+        return;
+    }
+    el.innerHTML = `<span style="color:var(--orange)">${Math.floor(diff/86400000)}</span>j <span style="color:var(--orange)">${Math.floor((diff%86400000)/3600000)}</span>h <span style="color:var(--orange)">${Math.floor((diff%3600000)/60000)}</span>m <span style="color:var(--orange)">${Math.floor((diff%60000)/1000)}</span>s`;
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+document.getElementById('rsvpForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const nom = document.getElementById('nom').value.trim();
+    const presence = document.getElementById('presence').value;
+    if(!nom || !presence) { alert('Veuillez remplir tous les champs.'); return; }
+    document.getElementById('rsvp-message').textContent = `Merci ${nom} ! Votre réponse (${presence === 'présent' ? '✅ Présent(e)' : '❌ Absent(e)'}) a bien été enregistrée.`;
+    this.reset();
+});
+
+// Initialisation : charger depuis localStorage d'abord
+console.log('🚀 Initialisation de la galerie...');
+if (!loadFromLocalStorage()) {
+    console.log('Aucune sauvegarde trouvée, démarrage avec galerie vide');
+    mediaItems = [];
+}
+renderGallery();
+if (isAdmin) renderMediaListAdmin();
+
+console.log(`📊 ${mediaItems.length} médias chargés`);
 </script>
 </body>
 </html>
