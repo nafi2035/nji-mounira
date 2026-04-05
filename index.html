@@ -8,7 +8,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
 <style>
-/* ========== STYLES.  (inchangés, gardez votre CSS existant ici) ========== */
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
   --brun:#C49A6C;
@@ -23,7 +22,6 @@ html{scroll-behavior:smooth;}
 body{font-family:'Poppins',sans-serif;background:var(--fond);color:#2c1e12;overflow-x:hidden;}
 h1,h2,h3{font-family:'Playfair Display',serif;}
 
-/* ENVELOPPE */
 #envelope-scene{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at center, #2d1a08 0%, #0f0804 100%);z-index:10000;transition:transform 1.0s cubic-bezier(0.4,0,0.2,1), opacity 0.8s ease;}
 #envelope-scene.slide-up{transform:translateY(-100%);opacity:0;pointer-events:none;}
 .ptcl{position:absolute;border-radius:50%;background:#e8c97a;animation:floatUp linear infinite;opacity:0;pointer-events:none;}
@@ -53,7 +51,6 @@ h1,h2,h3{font-family:'Playfair Display',serif;}
 @keyframes flap-wings{0%{transform:scaleX(1);}100%{transform:scaleX(.25);}}
 @keyframes fly-path{0%{transform:translate(var(--bx0),var(--by0)) rotate(var(--brot));opacity:0;}8%{opacity:1;}92%{opacity:1;}100%{transform:translate(var(--bx1),var(--by1)) rotate(var(--brot));opacity:0;}}
 
-/* HERO */
 .hero{position:relative;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center;color:white;text-align:center;}
 .hero-bg{position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45)),url('k.jpg') center/cover;animation:zoom-bg 10s infinite alternate ease-in-out;}
 @keyframes zoom-bg{0%{transform:scale(1);}100%{transform:scale(1.12);}}
@@ -70,7 +67,6 @@ h1,h2,h3{font-family:'Playfair Display',serif;}
 .scroll-line{width:1px;height:38px;background:linear-gradient(to bottom,#c9a84c,transparent);}
 @keyframes bounce-down{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(8px);}}
 
-/* Sections */
 .section{max-width:1100px;margin:0 auto;padding:70px 20px;border-bottom:1px dashed var(--brun);}
 .section h2{font-size:clamp(1.8rem,4vw,2.5rem);color:var(--orange);text-align:center;margin-bottom:40px;position:relative;}
 .section h2:after{content:'';display:block;width:80px;height:3px;background:var(--gold);margin:12px auto 0;border-radius:3px;}
@@ -95,7 +91,6 @@ h1,h2,h3{font-family:'Playfair Display',serif;}
 .bio-card p{color:#4a3420;line-height:1.6;margin-bottom:10px;}
 .bio-quote{font-style:italic;margin-top:20px;color:var(--orange);font-weight:500;}
 
-/* GALERIE */
 .galerie-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:25px;margin-top:20px;}
 .galerie-item{position:relative;border-radius:24px;overflow:hidden;box-shadow:0 12px 25px rgba(0,0,0,0.1);cursor:pointer;transition:transform 0.3s ease, box-shadow 0.3s;background:#1a0f06;height:260px;}
 .galerie-item:hover{transform:scale(1.02);box-shadow:0 20px 35px rgba(0,0,0,0.15);}
@@ -112,7 +107,6 @@ h1,h2,h3{font-family:'Playfair Display',serif;}
 .delete-media{position:absolute;bottom:12px;right:12px;background:rgba(220,53,69,0.85);backdrop-filter:blur(4px);border:none;border-radius:30px;padding:5px 12px;color:white;font-size:0.7rem;font-weight:600;display:flex;align-items:center;gap:6px;cursor:pointer;z-index:10;transition:0.2s;font-family:'Poppins',sans-serif;}
 .delete-media:hover{background:#dc3545;transform:scale(1.05);}
 
-/* ADMIN PANEL */
 .admin-panel{position:fixed;bottom:25px;left:25px;z-index:9998;}
 .admin-toggle{background:var(--orange);border:none;border-radius:50px;padding:12px 20px;color:white;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:10px;box-shadow:0 4px 15px rgba(0,0,0,.3);transition:0.2s;}
 .admin-toggle:hover{background:#8b4a2a;transform:scale(1.05);}
@@ -134,7 +128,6 @@ hr{margin:20px 0;border-color:var(--brun);}
 .admin-list-item span{font-size:0.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px;}
 .admin-list-delete{background:#dc3545;color:white;border:none;border-radius:20px;padding:5px 12px;cursor:pointer;font-size:0.7rem;}
 
-/* LIGHTBOX */
 #custom-lightbox{position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,0);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:background 0.35s ease, opacity 0.35s ease;}
 #custom-lightbox.open{background:rgba(10,5,2,0.95);opacity:1;pointer-events:all;}
 #lb-img-wrap{position:relative;max-width:92vw;max-height:85vh;display:flex;align-items:center;justify-content:center;transform:scale(0.88);transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1);}
@@ -165,7 +158,6 @@ hr{margin:20px 0;border-color:var(--brun);}
 footer{background:var(--brun-dark);color:white;text-align:center;padding:25px;margin-top:20px;}
 @media(max-width:600px){.section h2{font-size:1.8rem;}.galerie-grid{grid-template-columns:1fr;}.bio-card{padding:20px;}#lb-prev{left:8px;}#lb-next{right:8px;}.lb-arrow{width:40px;height:40px;font-size:1rem;}}
 
-/* SECTION NAVIGATION AMÉLIORÉE */
 .nav-section{max-width:1100px;margin:0 auto;padding:70px 20px;border-bottom:1px dashed var(--brun);}
 .nav-section h2{font-size:clamp(1.8rem,4vw,2.5rem);color:var(--orange);text-align:center;margin-bottom:8px;}
 .nav-section h2:after{content:'';display:block;width:80px;height:3px;background:var(--gold);margin:12px auto 0;border-radius:3px;}
@@ -196,7 +188,6 @@ footer{background:var(--brun-dark);color:white;text-align:center;padding:25px;ma
 .get-direction-btn{background:var(--orange);border:none;border-radius:40px;padding:8px 16px;color:white;font-weight:600;font-size:0.75rem;display:flex;align-items:center;gap:8px;cursor:pointer;transition:0.2s;}
 .get-direction-btn:hover{background:var(--brun-dark);}
 
-/* MODAL CONNEXION ADMIN */
 .login-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);backdrop-filter:blur(10px);z-index:100000;display:flex;align-items:center;justify-content:center;visibility:hidden;opacity:0;transition:0.3s;}
 .login-modal.open{visibility:visible;opacity:1;}
 .login-box{background:var(--fond);padding:40px;border-radius:40px;text-align:center;max-width:350px;width:90%;border:2px solid var(--gold);}
@@ -218,7 +209,6 @@ footer{background:var(--brun-dark);color:white;text-align:center;padding:25px;ma
   <source src="allah.mp3" type="audio/mpeg">
 </audio>
 
-<!-- MODAL CONNEXION ADMIN -->
 <div class="login-modal" id="loginModal">
   <div class="login-box">
     <i class="fas fa-crown" style="font-size:2.5rem;color:var(--orange);"></i>
@@ -229,31 +219,24 @@ footer{background:var(--brun-dark);color:white;text-align:center;padding:25px;ma
   </div>
 </div>
 
-<!-- BADGE MODE ADMIN -->
 <div class="admin-mode-badge" id="adminModeBadge">
   <i class="fas fa-shield-alt"></i> Mode Admin
   <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Déconnexion</button>
 </div>
 
-<!-- ENVELOPPE -->
 <div id="envelope-scene"><div class="envelope-wrap"><div class="envelope" id="envelope"><div class="env-body"></div><div class="env-left"></div><div class="env-right"></div><div class="env-border"></div><div class="env-flap" id="envFlap"><div class="env-flap-shape"></div></div><div class="wax-seal" id="waxSeal"><div class="wax-inner"><span class="wax-text">N&M</span></div></div><div class="env-text"><h2>Nji Nahfon & Neuh Mounira</h2><p>16 · 17 · 18 Avril 2026</p></div></div></div><div class="seal-hint">Cliquez sur le cachet pour ouvrir</div></div>
 
-<!-- LIGHTBOX -->
 <div id="custom-lightbox"><button id="lb-back-btn"><i class="fas fa-arrow-left"></i> Retour</button><div id="lb-counter"></div><button class="lb-arrow" id="lb-prev"><i class="fas fa-chevron-left"></i></button><div id="lb-img-wrap"><img id="lb-img" src=""><video id="lb-video" controls playsinline></video></div><button class="lb-arrow" id="lb-next"><i class="fas fa-chevron-right"></i></button><div id="lb-title"></div></div>
 
-<!-- CONTENU PRINCIPAL -->
 <div id="contenu-principal" style="display:none;opacity:0;transition:opacity 1s ease;">
   <section class="hero"><div class="hero-bg"></div><div class="hero-frame"><div class="corner c-tl"></div><div class="corner c-tr"></div><div class="corner c-bl"></div><div class="corner c-br"></div></div><div class="hero-content"><h1>Nji Nahfon<br>&amp; Neuh Mounira</h1><p>Du 16 au 18 Avril 2026</p></div><div class="hero-scroll"><div class="scroll-line"></div>DÉCOUVRIR</div></section>
 
   <div class="invitation-box"><i class="fas fa-quote-left" style="color:var(--orange);font-size:2rem;opacity:.5;"></i><p>Avec une joie immense, nous vous convions à célébrer l'union sacrée de nos cœurs.</p><p><strong>Nji Nahfon</strong>, épris d'amour pour sa bien-aimée, vous invite à partager ces instants de grâce.</p><p>La grande famille <strong>Nji Mefire Ndakue</strong>, fière et heureuse, se joint à lui pour vous accueillir et vous honorer de sa présence.</p><p>Que vos pas nous accompagnent dans cette danse de vie, où se mêlent traditions bamoun et promesses d'éternité.</p><div class="signature"><i class="fas fa-heart" style="color:var(--orange);"></i> Nji Nahfon & Neuh Mounira <i class="fas fa-heart" style="color:var(--orange);"></i></div></div>
 
-  <!-- Biographie -->
   <section class="section"><h2>Les mariés</h2><div class="bio-grid"><div class="bio-card"><img src="b.jpg" alt="Nji Nahfon" class="bio-avatar"><h3>Nji Nahfon</h3><p>Fils de Bangambi, fier héritier des traditions bamoun. Homme de cœur et de foi, il incarne la noblesse et l'engagement.</p><p class="bio-quote">« L'amour est un pont entre les âmes. »</p></div><div class="bio-card"><img src="c.jpg" alt="Neuh Mounira" class="bio-avatar"><h3>Neuh Mounira</h3><p>Originaire de Foumban, rayonnante de douceur et de sagesse. Elle unit avec grâce la modernité et l'attachement aux racines ancestrales.</p><p class="bio-quote">« Chaque jour à tes côtés est une promesse d'éternité. »</p></div></div></section>
 
-  <!-- Programme -->
   <section class="section"><h2>Programme des festivités</h2><div class="programme-container"><div class="jour-programme"><div class="jour-titre">🗓 Jeudi 16 Avril 2026 – Foumban</div><div class="evenement"><i class="fas fa-futbol"></i><span class="heure">10h00</span><span class="description"><strong>Match de gala</strong> – Foumban</span></div><div class="evenement"><i class="fas fa-paint-brush"></i><span class="heure">16h00</span><span class="description"><strong>Henné party</strong> – Foumban</span></div></div><div class="jour-programme"><div class="jour-titre">🗓 Vendredi 17 Avril 2026 – Foumban</div><div class="evenement"><i class="fas fa-utensils"></i><span class="heure">11h00</span><span class="description"><strong>Cérémonie du met traditionnel</strong> – Foumban</span></div><div class="evenement"><i class="fas fa-ring"></i><span class="heure">16h00</span><span class="description"><strong>Mariage traditionnel – Yaplalé</strong> – Chez la mariée, Foumban</span></div></div><div class="jour-programme"><div class="jour-titre">🗓 Samedi 18 Avril 2026</div><div class="evenement"><i class="fas fa-mosque"></i><span class="heure">Matin</span><span class="description"><strong>Mariage religieux islamique</strong> – Koutlam, Foumban</span></div><div class="evenement"><i class="fas fa-champagne-glasses"></i><span class="heure">17h00</span><span class="description"><strong>Dîner</strong> – Bangambi (Chez Nji Nahfon), Arrondissement de Bangourain</span></div></div></div><p style="text-align:center;margin-top:25px;"><i class="fas fa-map-marker-alt" style="color:var(--orange);"></i> Foumban & environs, Région de l'Ouest, Cameroun</p></section>
 
-  <!-- GALERIE -->
   <section class="section"><h2>Galerie souvenirs</h2>
     <div class="galerie-tabs" style="display:flex;gap:10px;justify-content:center;margin-bottom:25px;">
       <button class="galerie-tab active" data-filter="all">Tous</button>
@@ -264,13 +247,10 @@ footer{background:var(--brun-dark);color:white;text-align:center;padding:25px;ma
     <p style="text-align:center;margin-top:20px;font-size:0.9rem;color:var(--brun-dark);"><i class="fas fa-search-plus"></i> Cliquez sur une image pour l'agrandir &nbsp;|&nbsp;<i class="fas fa-download"></i> Télécharger</p>
   </section>
 
-  <!-- Compte à rebours -->
   <section class="section"><h2>Compte à rebours avant les noces</h2><div style="text-align:center;"><div class="countdown-boite"><span id="countdown">Chargement…</span></div></div></section>
 
-  <!-- Dress Code -->
   <section class="section"><h2>Dress Code</h2><p style="text-align:center;margin-bottom:30px;">Couleurs : <span style="background:var(--brun);color:white;padding:5px 15px;border-radius:40px;">Marron clair</span> <span style="background:var(--blanc);color:#2c1e12;padding:5px 15px;border-radius:40px;border:1px solid #ccc;">Blanc cassé</span> <span style="background:var(--orange);color:white;padding:5px 15px;border-radius:40px;">Orange brûlé</span></p><div class="dress-flex"><div class="dress-card"><i class="fas fa-vest"></i><h3>Homme</h3><p>Costume beige, chemise blanche, boutonnière orange</p></div><div class="dress-card"><i class="fas fa-tshirt"></i><h3>Femme</h3><p>Robe ivoire, accessoires orange brûlé</p></div><div class="dress-card"><i class="fas fa-shoe-prints"></i><h3>Chaussures</h3><p>Nude ou marron clair</p></div><div class="dress-card"><i class="fas fa-feather"></i><h3>Inspiration</h3><p>Tons terreux, élégance naturelle bamoun</p></div></div></div>
 
-<!-- SECTION NAVIGATION GPS -->
 <section class="nav-section">
   <h2><i class="fas fa-route"></i> Comment venir ?</h2>
   <p class="nav-subtitle">Cliquez sur votre destination ci-dessous → le GPS vocal vous guidera</p>
@@ -344,7 +324,6 @@ footer{background:var(--brun-dark);color:white;text-align:center;padding:25px;ma
   </div>
 </section>
 
-  <!-- RSVP -->
   <section class="section"><h2>Confirmation de présence</h2><div style="max-width:600px;margin:0 auto;background:rgba(255,245,225,.7);padding:40px;border-radius:40px;"><form id="rsvpForm"><input type="text" id="nom" placeholder="Votre nom et prénom" required><select id="presence" required><option value="">Serez-vous présent(e) ?</option><option value="présent">Présent(e) ✅</option><option value="absent">Absent(e) ❌</option></select><textarea id="message-rsvp" placeholder="Vos vœux pour les mariés…" rows="3"></textarea><button type="submit" class="btn-submit"><i class="fas fa-paper-plane"></i> Envoyer ma réponse</button></form><div id="rsvp-message" style="text-align:center;margin-top:20px;color:green;font-weight:600;"></div></div></section>
 
   <footer><i class="fas fa-heart" style="color:var(--orange);"></i> Nji Nahfon & Neuh Mounira · Avril 2026 <i class="fas fa-heart" style="color:var(--orange);"></i></footer>
@@ -352,7 +331,6 @@ footer{background:var(--brun-dark);color:white;text-align:center;padding:25px;ma
 
 <button id="musicBtn"><i class="fas fa-music"></i></button>
 
-<!-- ADMIN PANEL -->
 <div class="admin-panel">
   <button class="admin-toggle" id="adminToggle"><i class="fas fa-cog"></i> Admin Galerie</button>
 </div>
@@ -361,7 +339,6 @@ footer{background:var(--brun-dark);color:white;text-align:center;padding:25px;ma
     <button class="admin-close" id="adminClose">&times;</button>
     <h3 style="color:var(--orange); text-align:center;">📸 Gérer la galerie</h3>
     
-    <!-- Permission par défaut pour les nouveaux médias -->
     <div class="permission-toggle" id="defaultPermissionToggle">
       <span><i class="fas fa-download"></i> Permission de téléchargement par défaut :</span>
       <label>
@@ -391,122 +368,126 @@ footer{background:var(--brun-dark);color:white;text-align:center;padding:25px;ma
 
 <script>
 // ============================================================
-//  GESTION DE LA GALERIE AVEC STOCKAGE LOCAL (localStorage + IndexedDB)
-//  CORRECTION POUR JPG ET PERSISTANCE DES DONNÉES
+//  SYSTÈME DE STOCKAGE INDEXEDDB - SOLUTION PERSISTANTE
+//  Les images restent stockées définitivement (pas de limite)
 // ============================================================
 
-// CONSTANTES
-const ADMIN_CODE = "njimounira2026";
+// Variables globales
+let db = null;
 let isAdmin = false;
 let mediaItems = [];
 let currentFilter = 'all';
+let pendingFiles = [];
 
-// Utilisation de localStorage comme solution principale (plus fiable)
-const STORAGE_KEY = 'wedding_gallery_data';
+const ADMIN_CODE = "njimounira2026";
 
-// Fonction pour sauvegarder dans localStorage
-function saveToLocalStorage() {
-    try {
-        // Ne pas sauvegarder les URLs base64 complètes (trop grandes)
-        // On garde juste les métadonnées, les URLs sont déjà stockées
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({
-            mediaItems: mediaItems.map(item => ({
-                id: item.id,
-                type: item.type,
-                url: item.url,
-                thumb: item.thumb,
-                title: item.title,
-                date: item.date,
-                originalName: item.originalName,
-                downloadAllowed: item.downloadAllowed
-            })),
-            lastUpdated: Date.now()
-        }));
-        console.log('✅ Sauvegarde localStorage effectuée');
-        return true;
-    } catch(e) {
-        console.error('❌ Erreur sauvegarde localStorage:', e);
-        return false;
-    }
-}
-
-// Charger depuis localStorage
-function loadFromLocalStorage() {
-    try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-            const data = JSON.parse(saved);
-            if (data.mediaItems && Array.isArray(data.mediaItems)) {
-                mediaItems = data.mediaItems;
-                console.log(`✅ Chargé ${mediaItems.length} médias depuis localStorage`);
-                return true;
-            }
-        }
-    } catch(e) {
-        console.error('❌ Erreur chargement localStorage:', e);
-    }
-    return false;
-}
-
-// Vérifier si une URL base64 est valide
-function isValidBase64(url) {
-    if (!url || typeof url !== 'string') return false;
-    // Vérifier si c'est une base64 valide
-    if (url.startsWith('data:image/') || url.startsWith('data:video/')) {
-        return true;
-    }
-    // Vérifier si c'est une URL HTTP valide
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-        return true;
-    }
-    return false;
-}
-
-// Fonction améliorée pour convertir un fichier en base64 avec compression pour les JPG
-async function fileToBase64(file) {
+// ========== 1. INITIALISATION INDEXEDDB ==========
+async function initIndexedDB() {
     return new Promise((resolve, reject) => {
-        // Vérifier le type de fichier
-        console.log('📁 Traitement du fichier:', file.name, 'Type:', file.type, 'Taille:', file.size);
+        const request = indexedDB.open('WeddingGalleryDB', 2); // Version 2
         
-        // Accepter les JPG même si le MIME type est incorrect
-        const isJPG = file.name.toLowerCase().endsWith('.jpg') || 
-                     file.name.toLowerCase().endsWith('.jpeg') ||
-                     file.type === 'image/jpeg' ||
-                     file.type === 'image/jpg';
+        request.onerror = () => {
+            console.error('❌ Erreur IndexedDB:', request.error);
+            reject(request.error);
+        };
         
-        if (isJPG && file.type !== 'image/jpeg') {
-            console.log('⚠️ Correction du MIME type JPG');
-            // Forcer le type pour JPG
-            Object.defineProperty(file, 'type', { value: 'image/jpeg' });
-        }
+        request.onsuccess = () => {
+            db = request.result;
+            console.log('✅ IndexedDB initialisée avec succès');
+            resolve(db);
+        };
         
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-            let result = e.target.result;
-            
-            // Compression pour les grandes images
-            if (file.type.startsWith('image/') && file.size > 500 * 1024) {
-                console.log('🖼️ Compression de l\'image...');
-                try {
-                    const compressed = await compressImage(result);
-                    if (compressed) result = compressed;
-                } catch(compressError) {
-                    console.warn('Compression impossible, utilisation originale:', compressError);
-                }
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            // Supprimer l'ancien store si existant (pour mise à jour)
+            if (db.objectStoreNames.contains('media')) {
+                db.deleteObjectStore('media');
             }
-            
-            console.log('✅ Conversion réussie, taille:', Math.round(result.length / 1024), 'KB');
-            resolve(result);
+            // Créer le nouveau store
+            const store = db.createObjectStore('media', { keyPath: 'id' });
+            store.createIndex('date', 'date');
+            store.createIndex('type', 'type');
+            console.log('📦 Structure IndexedDB créée');
         };
-        reader.onerror = (err) => {
-            console.error('❌ Erreur lecture fichier:', err);
-            reject(err);
-        };
-        reader.readAsDataURL(file);
     });
 }
 
-// Fonction de compression d'image
+// ========== 2. SAUVEGARDER UN MÉDIA ==========
+async function saveMediaToDB(media) {
+    if (!db) await initIndexedDB();
+    
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(['media'], 'readwrite');
+        const store = transaction.objectStore('media');
+        const request = store.put(media);
+        
+        request.onsuccess = () => {
+            console.log('💾 Média sauvegardé:', media.id);
+            resolve(true);
+        };
+        request.onerror = () => {
+            console.error('❌ Erreur sauvegarde:', request.error);
+            reject(request.error);
+        };
+    });
+}
+
+// ========== 3. CHARGER TOUS LES MÉDIAS ==========
+async function loadAllMediaFromDB() {
+    if (!db) await initIndexedDB();
+    
+    return new Promise((resolve) => {
+        const transaction = db.transaction(['media'], 'readonly');
+        const store = transaction.objectStore('media');
+        const request = store.getAll();
+        
+        request.onsuccess = () => {
+            const medias = request.result || [];
+            console.log(`📷 ${medias.length} médias chargés depuis IndexedDB`);
+            resolve(medias);
+        };
+        request.onerror = () => {
+            console.error('Erreur chargement:', request.error);
+            resolve([]);
+        };
+    });
+}
+
+// ========== 4. SUPPRIMER UN MÉDIA ==========
+async function deleteMediaFromDB(id) {
+    if (!db) await initIndexedDB();
+    
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(['media'], 'readwrite');
+        const store = transaction.objectStore('media');
+        const request = store.delete(id);
+        
+        request.onsuccess = () => {
+            console.log('🗑️ Média supprimé:', id);
+            resolve(true);
+        };
+        request.onerror = () => reject(request.error);
+    });
+}
+
+// ========== 5. SUPPRIMER TOUS LES MÉDIAS (reset) ==========
+async function clearAllMedia() {
+    if (!db) await initIndexedDB();
+    
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(['media'], 'readwrite');
+        const store = transaction.objectStore('media');
+        const request = store.clear();
+        
+        request.onsuccess = () => {
+            console.log('🗑️ Tous les médias supprimés');
+            resolve(true);
+        };
+        request.onerror = () => reject(request.error);
+    });
+}
+
+// ========== FONCTIONS DE CONVERSION ET COMPRESSION ==========
 function compressImage(base64) {
     return new Promise((resolve) => {
         const img = new Image();
@@ -515,7 +496,6 @@ function compressImage(base64) {
             let width = img.width;
             let height = img.height;
             
-            // Redimensionner si trop grand (max 1200px)
             const maxSize = 1200;
             if (width > maxSize || height > maxSize) {
                 if (width > height) {
@@ -531,39 +511,43 @@ function compressImage(base64) {
             canvas.height = height;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
-            
-            // Qualité 0.8 pour bon équilibre taille/qualité
             const compressed = canvas.toDataURL('image/jpeg', 0.8);
             resolve(compressed);
         };
-        img.onerror = () => {
-            console.warn('Erreur chargement image pour compression');
-            resolve(base64);
-        };
+        img.onerror = () => resolve(base64);
         img.src = base64;
     });
 }
 
-// Générer une miniature vidéo
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            let result = e.target.result;
+            if (file.type.startsWith('image/') && file.size > 500 * 1024) {
+                result = await compressImage(result);
+            }
+            resolve(result);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
 function generateVideoThumbnail(videoFile) {
     return new Promise((resolve) => {
         const video = document.createElement('video');
         video.preload = 'metadata';
         video.muted = true;
-        video.playsInline = true;
         const url = URL.createObjectURL(videoFile);
         video.src = url;
         
         const timeout = setTimeout(() => {
-            console.warn('Timeout génération miniature vidéo');
             URL.revokeObjectURL(url);
             resolve(null);
         }, 5000);
         
-        video.addEventListener('loadeddata', () => {
-            video.currentTime = 1;
-        });
-        
+        video.addEventListener('loadeddata', () => { video.currentTime = 1; });
         video.addEventListener('seeked', () => {
             clearTimeout(timeout);
             const canvas = document.createElement('canvas');
@@ -575,7 +559,6 @@ function generateVideoThumbnail(videoFile) {
             URL.revokeObjectURL(url);
             resolve(thumb);
         });
-        
         video.addEventListener('error', () => {
             clearTimeout(timeout);
             URL.revokeObjectURL(url);
@@ -584,27 +567,21 @@ function generateVideoThumbnail(videoFile) {
     });
 }
 
-// Ajouter un média
+// ========== 6. AJOUTER UN MÉDIA (avec IndexedDB) ==========
 async function addMedia(file, downloadAllowed) {
     return new Promise(async (resolve, reject) => {
         try {
-            // Vérifier le type de fichier
-            const isImage = file.type.startsWith('image/') || 
-                           file.name.match(/\.(jpg|jpeg|png|gif)$/i);
-            const isVideo = file.type.startsWith('video/') || 
-                           file.name.match(/\.(mp4|webm)$/i);
+            const isImage = file.type.startsWith('image/') || file.name.match(/\.(jpg|jpeg|png|gif)$/i);
+            const isVideo = file.type.startsWith('video/') || file.name.match(/\.(mp4|webm)$/i);
             
             if (!isImage && !isVideo) {
-                throw new Error('Format non supporté. Utilisez JPG, PNG ou MP4');
+                throw new Error('Format non supporté');
             }
             
             const type = isImage ? 'img' : 'video';
-            console.log('📤 Ajout média:', file.name, 'Type:', type);
-            
             const base64 = await fileToBase64(file);
-            if (!base64) throw new Error('Erreur conversion fichier');
-            
             let thumb = base64;
+            
             if (type === 'video') {
                 const videoThumb = await generateVideoThumbnail(file);
                 thumb = videoThumb || base64;
@@ -621,44 +598,47 @@ async function addMedia(file, downloadAllowed) {
                 downloadAllowed: downloadAllowed
             };
             
-            mediaItems.unshift(media);
-            saveToLocalStorage();
+            // Sauvegarder dans IndexedDB
+            await saveMediaToDB(media);
+            
+            // Recharger la liste depuis IndexedDB
+            mediaItems = await loadAllMediaFromDB();
             renderGallery();
             if (isAdmin) renderMediaListAdmin();
             
-            console.log('✅ Média ajouté avec succès, ID:', media.id);
+            console.log('✅ Média ajouté avec succès');
             resolve(media);
         } catch(error) {
-            console.error('❌ Erreur addMedia:', error);
+            console.error('❌ Erreur:', error);
             reject(error);
         }
     });
 }
 
-// Supprimer un média
+// ========== 7. SUPPRIMER UN MÉDIA ==========
 async function deleteMedia(id) {
     const media = mediaItems.find(m => m.id === id);
     if (media && confirm(`Supprimer "${media.title}" ?`)) {
-        mediaItems = mediaItems.filter(m => m.id !== id);
-        saveToLocalStorage();
+        await deleteMediaFromDB(id);
+        mediaItems = await loadAllMediaFromDB();
         renderGallery();
         if (isAdmin) renderMediaListAdmin();
-        console.log('🗑️ Média supprimé, ID:', id);
     }
 }
 
-// Modifier permission téléchargement
+// ========== 8. MODIFIER PERMISSION ==========
 async function toggleDownloadPermission(media) {
     media.downloadAllowed = !media.downloadAllowed;
-    saveToLocalStorage();
+    await saveMediaToDB(media);
+    mediaItems = await loadAllMediaFromDB();
     renderGallery();
     if (isAdmin) renderMediaListAdmin();
 }
 
-// Exporter la galerie
+// ========== 9. EXPORTER LA GALERIE ==========
 function exportGallery() {
     const exportData = {
-        version: '1.0',
+        version: '2.0',
         exportDate: new Date().toISOString(),
         mediaCount: mediaItems.length,
         mediaItems: mediaItems
@@ -674,51 +654,46 @@ function exportGallery() {
     showStatus('✅ Galerie exportée avec succès!', 'success');
 }
 
-// Importer une sauvegarde
-function importGallery(file) {
+// ========== 10. IMPORTER UNE SAUVEGARDE ==========
+async function importGallery(file) {
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
         try {
             const data = JSON.parse(e.target.result);
             if (data.mediaItems && Array.isArray(data.mediaItems)) {
-                // Vérifier que chaque média a une URL valide
-                const validMedia = data.mediaItems.filter(m => {
-                    if (!m.url || !isValidBase64(m.url)) {
-                        console.warn('Média invalide ignoré:', m.title);
-                        return false;
-                    }
-                    return true;
-                });
+                // Vider l'ancienne galerie
+                await clearAllMedia();
                 
-                mediaItems = validMedia;
-                saveToLocalStorage();
+                // Ajouter tous les médias un par un
+                for (const media of data.mediaItems) {
+                    await saveMediaToDB(media);
+                }
+                
+                mediaItems = await loadAllMediaFromDB();
                 renderGallery();
                 if (isAdmin) renderMediaListAdmin();
-                showStatus(`✅ Import réussi! ${validMedia.length} médias chargés.`, 'success');
+                showStatus(`✅ Import réussi! ${mediaItems.length} médias chargés.`, 'success');
             } else {
-                throw new Error('Format de fichier invalide');
+                throw new Error('Format invalide');
             }
         } catch(error) {
             console.error('Erreur import:', error);
-            showStatus('❌ Erreur lors de l\'import du fichier', 'error');
+            showStatus('❌ Erreur lors de l\'import', 'error');
         }
     };
     reader.readAsText(file);
 }
 
-// Afficher un message de statut
 function showStatus(message, type) {
     const statusDiv = document.getElementById('adminStatus');
     if (statusDiv) {
         statusDiv.innerHTML = message;
         statusDiv.style.color = type === 'error' ? '#dc3545' : '#28a745';
-        setTimeout(() => {
-            statusDiv.innerHTML = '';
-        }, 3000);
+        setTimeout(() => { statusDiv.innerHTML = ''; }, 3000);
     }
 }
 
-// Rendu de la galerie photos et vidéos 
+// ========== AFFICHAGE GALERIE ==========
 function renderGallery() {
     const container = document.getElementById('galerie-grid');
     if (!container) return;
@@ -742,10 +717,6 @@ function renderGallery() {
             const img = document.createElement('img');
             img.src = item.thumb || item.url;
             img.alt = item.title;
-            img.onerror = () => {
-                console.warn('Erreur chargement image:', item.title);
-                img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 100"%3E%3Crect fill="%23666" width="100" height="100"/%3E%3Ctext x="50" y="50" text-anchor="middle" dy=".3em" fill="white" font-size="10"%3EImage%3C/text%3E%3C/svg%3E';
-            };
             card.appendChild(img);
         } else {
             const canvas = document.createElement('canvas');
@@ -831,7 +802,6 @@ function renderGallery() {
     });
 }
 
-// Rendu liste admin
 function renderMediaListAdmin() {
     const container = document.getElementById('mediaList');
     if (!container) return;
@@ -864,7 +834,7 @@ function renderMediaListAdmin() {
     });
 }
 
-// Lightbox functions
+// ========== LIGHTBOX ==========
 let currentLightboxIndex = 0;
 const lbOverlay = document.getElementById('custom-lightbox');
 const lbImg = document.getElementById('lb-img');
@@ -904,44 +874,12 @@ function showLightboxItem(index) {
         lbVideo.style.display = 'none';
         lbImg.style.display = 'block';
         lbImg.src = item.url;
-        lbImg.onerror = () => {
-            console.warn('Erreur chargement image dans lightbox');
-            lbImg.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 100"%3E%3Crect fill="%23666" width="100" height="100"/%3E%3Ctext x="50" y="50" text-anchor="middle" dy=".3em" fill="white" font-size="10"%3EImage non disponible%3C/text%3E%3C/svg%3E';
-        };
     } else {
         lbImg.style.display = 'none';
         lbImg.src = '';
         lbVideo.style.display = 'block';
         lbVideo.src = item.url;
         lbVideo.load();
-        
-        const music = document.getElementById('music');
-        lbVideo.onplay = () => {
-            if (music && !music.paused) {
-                music._pausedByVideo = true;
-                music.pause();
-                const musicBtn = document.getElementById('musicBtn');
-                if (musicBtn) musicBtn.innerHTML = '<i class="fas fa-music"></i>';
-            }
-        };
-        lbVideo.onpause = () => {
-            const music = document.getElementById('music');
-            if (music && music._pausedByVideo && music.paused) {
-                music.play().catch(()=>{});
-                music._pausedByVideo = false;
-                const musicBtn = document.getElementById('musicBtn');
-                if (musicBtn) musicBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            }
-        };
-        lbVideo.onended = () => {
-            const music = document.getElementById('music');
-            if (music && music._pausedByVideo && music.paused) {
-                music.play().catch(()=>{});
-                music._pausedByVideo = false;
-                const musicBtn = document.getElementById('musicBtn');
-                if (musicBtn) musicBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            }
-        };
     }
 }
 
@@ -968,7 +906,7 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight') nextLightbox();
 });
 
-// Admin functions
+// ========== ADMIN FUNCTIONS ==========
 function loginAdmin() {
     const password = document.getElementById('adminPassword').value;
     if (password === ADMIN_CODE) {
@@ -988,11 +926,7 @@ function logoutAdmin() {
     document.getElementById('adminModeBadge').style.display = 'none';
     document.getElementById('adminModal').classList.remove('open');
     renderGallery();
-    showStatus('Mode admin désactivé', 'success');
 }
-
-// Admin panel UI
-let pendingFiles = [];
 
 function updatePreview() {
     const container = document.getElementById('adminPreviewGrid');
@@ -1023,7 +957,19 @@ function updatePreview() {
     });
 }
 
-// Événements admin
+// ========== INITIALISATION PRINCIPALE ==========
+async function init() {
+    console.log('🚀 Initialisation du site...');
+    await initIndexedDB();
+    mediaItems = await loadAllMediaFromDB();
+    renderGallery();
+    console.log(`✅ ${mediaItems.length} médias chargés`);
+}
+
+// Lancer l'initialisation
+init();
+
+// ========== ÉVÉNEMENTS UI ==========
 document.getElementById('adminToggle').addEventListener('click', () => {
     if (!isAdmin) {
         document.getElementById('loginModal').classList.add('open');
@@ -1036,7 +982,6 @@ document.getElementById('loginBtn').addEventListener('click', loginAdmin);
 document.getElementById('logoutBtn').addEventListener('click', logoutAdmin);
 document.getElementById('adminPassword').addEventListener('keypress', (e) => { if(e.key === 'Enter') loginAdmin(); });
 
-// Upload
 document.getElementById('uploadArea').addEventListener('click', () => document.getElementById('fileInput').click());
 document.getElementById('fileInput').addEventListener('change', (e) => { 
     pendingFiles = Array.from(e.target.files); 
@@ -1070,32 +1015,23 @@ document.getElementById('uploadBtn').addEventListener('click', async () => {
     const defaultPerm = document.querySelector('input[name="defaultDownloadPerm"]:checked').value === 'allowed';
     const statusDiv = document.getElementById('adminStatus');
     statusDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Ajout en cours...';
-    statusDiv.style.color = '';
     
     let successCount = 0;
-    let errorCount = 0;
-    
     for (const file of pendingFiles) {
         try {
             await addMedia(file, defaultPerm);
             successCount++;
         } catch(e) {
             console.error('Erreur upload:', e);
-            errorCount++;
-            showStatus(`❌ Erreur: ${file.name} - ${e.message}`, 'error');
         }
     }
     
     pendingFiles = [];
     updatePreview();
     document.getElementById('fileInput').value = '';
-    
-    if (successCount > 0) {
-        showStatus(`✅ ${successCount} média(s) ajouté(s) avec succès!${errorCount > 0 ? ` (${errorCount} erreur(s))` : ''}`, 'success');
-    }
+    showStatus(`✅ ${successCount} média(s) ajouté(s) avec succès!`, 'success');
 });
 
-// Backup / Restore
 document.getElementById('exportBackupBtn').addEventListener('click', exportGallery);
 document.getElementById('importBackupBtn').addEventListener('click', () => {
     document.getElementById('importBackupInput').click();
@@ -1106,7 +1042,6 @@ document.getElementById('importBackupInput').addEventListener('change', (e) => {
     }
 });
 
-// Filtres galerie
 document.querySelectorAll('.galerie-tab').forEach(tab => {
     tab.addEventListener('click', () => {
         document.querySelectorAll('.galerie-tab').forEach(t => t.classList.remove('active'));
@@ -1116,10 +1051,7 @@ document.querySelectorAll('.galerie-tab').forEach(tab => {
     });
 });
 
-// ============================================================
-//  ANCIENNES FONCTIONS (Enveloppe, musique, papillons, etc.)
-// ============================================================
-
+// ========== AUTRES FONCTIONS (papillons, musique, etc.) ==========
 function getDirectionsFromMe(lat, lng, name) {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(position => {
@@ -1235,17 +1167,6 @@ document.getElementById('rsvpForm').addEventListener('submit', function(e){
     document.getElementById('rsvp-message').textContent = `Merci ${nom} ! Votre réponse (${presence === 'présent' ? '✅ Présent(e)' : '❌ Absent(e)'}) a bien été enregistrée.`;
     this.reset();
 });
-
-// Initialisation : charger depuis localStorage d'abord
-console.log('🚀 Initialisation de la galerie...');
-if (!loadFromLocalStorage()) {
-    console.log('Aucune sauvegarde trouvée, démarrage avec galerie vide');
-    mediaItems = [];
-}
-renderGallery();
-if (isAdmin) renderMediaListAdmin();
-
-console.log(`📊 ${mediaItems.length} médias chargés`);
 </script>
 </body>
 </html>
