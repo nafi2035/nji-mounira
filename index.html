@@ -3,14 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-<title>Nji Nahfon & Neuh Mounira</title>
+<title>Nji Nahfon & Neh Mounira</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;600&family=Great+Vibes&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --brun:#C49A6C;
+  --brun:#8B5A2B;
+  --brun-fonce:#5C3A1E;
   --blanc:#FFF9EF;
   --orange:#A55D35;
   --brun-dark:#8B5A2B;
@@ -153,7 +154,7 @@ hr{margin:20px 0;border-color:var(--brun);}
 .btn-submit:hover{background:#8b4a2a;}
 .map-wrapper{border-radius:30px;overflow:hidden;box-shadow:0 10px 30px var(--ombre);}
 .map-wrapper iframe{width:100%;height:350px;border:0;}
-#musicBtn{position:fixed;bottom:25px;right:25px;width:55px;height:55px;border-radius:50%;background:var(--orange);border:none;color:white;font-size:1.4rem;cursor:pointer;z-index:99999;box-shadow:0 4px 15px rgba(0,0,0,.3);display:none;align-items:center;justify-content:center;transition:background .2s,transform .2s;}
+#musicBtn{position:fixed;bottom:25px;right:25px;width:55px;height:55px;border-radius:50%;background:var(--orange);border:none;color:white;font-size:1.4rem;cursor:pointer;z-index:99999;display:none;align-items:center;justify-content:center;transition:background .2s,transform .2s;}
 #musicBtn:hover{background:#8b4a2a;transform:scale(1.1);}
 footer{background:var(--brun-dark);color:white;text-align:center;padding:25px;margin-top:20px;}
 @media(max-width:600px){.section h2{font-size:1.8rem;}.galerie-grid{grid-template-columns:1fr;}.bio-card{padding:20px;}#lb-prev{left:8px;}#lb-next{right:8px;}.lb-arrow{width:40px;height:40px;font-size:1rem;}}
@@ -224,16 +225,16 @@ footer{background:var(--brun-dark);color:white;text-align:center;padding:25px;ma
   <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Déconnexion</button>
 </div>
 
-<div id="envelope-scene"><div class="envelope-wrap"><div class="envelope" id="envelope"><div class="env-body"></div><div class="env-left"></div><div class="env-right"></div><div class="env-border"></div><div class="env-flap" id="envFlap"><div class="env-flap-shape"></div></div><div class="wax-seal" id="waxSeal"><div class="wax-inner"><span class="wax-text">N&M</span></div></div><div class="env-text"><h2>Nji Nahfon & Neuh Mounira</h2><p>16 · 17 · 18 Avril 2026</p></div></div></div><div class="seal-hint">Cliquez sur le cachet pour ouvrir</div></div>
+<div id="envelope-scene"><div class="envelope-wrap"><div class="envelope" id="envelope"><div class="env-body"></div><div class="env-left"></div><div class="env-right"></div><div class="env-border"></div><div class="env-flap" id="envFlap"><div class="env-flap-shape"></div></div><div class="wax-seal" id="waxSeal"><div class="wax-inner"><span class="wax-text">N&M</span></div></div><div class="env-text"><h2>Nji Nahfon & Neh Mounira</h2><p>16 · 17 · 18 Avril 2026</p></div></div></div><div class="seal-hint">Cliquez sur le cachet pour ouvrir</div></div>
 
 <div id="custom-lightbox"><button id="lb-back-btn"><i class="fas fa-arrow-left"></i> Retour</button><div id="lb-counter"></div><button class="lb-arrow" id="lb-prev"><i class="fas fa-chevron-left"></i></button><div id="lb-img-wrap"><img id="lb-img" src=""><video id="lb-video" controls playsinline></video></div><button class="lb-arrow" id="lb-next"><i class="fas fa-chevron-right"></i></button><div id="lb-title"></div></div>
 
 <div id="contenu-principal" style="display:none;opacity:0;transition:opacity 1s ease;">
-  <section class="hero"><div class="hero-bg"></div><div class="hero-frame"><div class="corner c-tl"></div><div class="corner c-tr"></div><div class="corner c-bl"></div><div class="corner c-br"></div></div><div class="hero-content"><h1>Nji Nahfon<br>&amp; Neuh Mounira</h1><p>Du 16 au 18 Avril 2026</p></div><div class="hero-scroll"><div class="scroll-line"></div>DÉCOUVRIR</div></section>
+  <section class="hero"><div class="hero-bg"></div><div class="hero-frame"><div class="corner c-tl"></div><div class="corner c-tr"></div><div class="corner c-bl"></div><div class="corner c-br"></div></div><div class="hero-content"><h1>Nji Nahfon<br>&amp; Neh Mounira</h1><p>Du 16 au 18 Avril 2026</p></div><div class="hero-scroll"><div class="scroll-line"></div>DÉCOUVRIR</div></section>
 
-  <div class="invitation-box"><i class="fas fa-quote-left" style="color:var(--orange);font-size:2rem;opacity:.5;"></i><p>Avec une joie immense, nous vous convions à célébrer l'union sacrée de nos cœurs.</p><p><strong>Nji Nahfon</strong>, épris d'amour pour sa bien-aimée, vous invite à partager ces instants de grâce.</p><p>La grande famille <strong>Nji Mefire Ndakue</strong>, fière et heureuse, se joint à lui pour vous accueillir et vous honorer de sa présence.</p><p>Que vos pas nous accompagnent dans cette danse de vie, où se mêlent traditions bamoun et promesses d'éternité.</p><div class="signature"><i class="fas fa-heart" style="color:var(--orange);"></i> Nji Nahfon & Neuh Mounira <i class="fas fa-heart" style="color:var(--orange);"></i></div></div>
+  <div class="invitation-box"><i class="fas fa-quote-left" style="color:var(--orange);font-size:2rem;opacity:.5;"></i><p>Avec une joie immense, nous vous convions à célébrer l'union sacrée de nos cœurs.</p><p><strong>Nji Nahfon</strong>, épris d'amour pour sa bien-aimée, vous invite à partager ces instants de grâce.</p><p>La grande famille <strong>Nji Mefire Ndakue</strong>, fière et heureuse, se joint à lui pour vous accueillir et vous honorer de sa présence.</p><p>Que vos pas nous accompagnent dans cette danse de vie, où se mêlent traditions bamoun et promesses d'éternité.</p><div class="signature"><i class="fas fa-heart" style="color:var(--orange);"></i> Nji Nahfon & Neh Mounira <i class="fas fa-heart" style="color:var(--orange);"></i></div></div>
 
-  <section class="section"><h2>Les mariés</h2><div class="bio-grid"><div class="bio-card"><img src="b.jpg" alt="Nji Nahfon" class="bio-avatar"><h3>Nji Nahfon</h3><p>Fils de Bangambi, fier héritier des traditions bamoun. Homme de cœur et de foi, il incarne la noblesse et l'engagement.</p><p class="bio-quote">« L'amour est un pont entre les âmes. »</p></div><div class="bio-card"><img src="c.jpg" alt="Neuh Mounira" class="bio-avatar"><h3>Neuh Mounira</h3><p>Originaire de Foumban, rayonnante de douceur et de sagesse. Elle unit avec grâce la modernité et l'attachement aux racines ancestrales.</p><p class="bio-quote">« Chaque jour à tes côtés est une promesse d'éternité. »</p></div></div></section>
+  <section class="section"><h2>Les mariés</h2><div class="bio-grid"><div class="bio-card"><img src="b.jpg" alt="Nji Nahfon" class="bio-avatar"><h3>Nji Nahfon</h3><p>Fils de Bangambi, fier héritier des traditions bamoun. Homme de cœur et de foi, il incarne la noblesse et l'engagement.</p><p class="bio-quote">« L'amour est un pont entre les âmes. »</p></div><div class="bio-card"><img src="c.jpg" alt="Neh Mounira" class="bio-avatar"><h3>Neh Mounira</h3><p>Originaire de Foumban, rayonnante de douceur et de sagesse. Elle unit avec grâce la modernité et l'attachement aux racines ancestrales.</p><p class="bio-quote">« Chaque jour à tes côtés est une promesse d'éternité. »</p></div></div></section>
 
   <section class="section"><h2>Programme des festivités</h2><div class="programme-container"><div class="jour-programme"><div class="jour-titre">🗓 Jeudi 16 Avril 2026 – Foumban</div><div class="evenement"><i class="fas fa-futbol"></i><span class="heure">10h00</span><span class="description"><strong>Match de gala</strong> – Foumban</span></div><div class="evenement"><i class="fas fa-paint-brush"></i><span class="heure">16h00</span><span class="description"><strong>Henné party</strong> – Foumban</span></div></div><div class="jour-programme"><div class="jour-titre">🗓 Vendredi 17 Avril 2026 – Foumban</div><div class="evenement"><i class="fas fa-utensils"></i><span class="heure">11h00</span><span class="description"><strong>Cérémonie du met traditionnel</strong> – Foumban</span></div><div class="evenement"><i class="fas fa-ring"></i><span class="heure">16h00</span><span class="description"><strong>Mariage traditionnel – Yaplalé</strong> – Chez la mariée, Foumban</span></div></div><div class="jour-programme"><div class="jour-titre">🗓 Samedi 18 Avril 2026</div><div class="evenement"><i class="fas fa-mosque"></i><span class="heure">Matin</span><span class="description"><strong>Mariage religieux islamique</strong> – Koutlam, Foumban</span></div><div class="evenement"><i class="fas fa-champagne-glasses"></i><span class="heure">17h00</span><span class="description"><strong>Dîner</strong> – Bangambi (Chez Nji Nahfon), Arrondissement de Bangourain</span></div></div></div><p style="text-align:center;margin-top:25px;"><i class="fas fa-map-marker-alt" style="color:var(--orange);"></i> Foumban & environs, Région de l'Ouest, Cameroun</p></section>
 
@@ -249,7 +250,7 @@ footer{background:var(--brun-dark);color:white;text-align:center;padding:25px;ma
 
   <section class="section"><h2>Compte à rebours avant les noces</h2><div style="text-align:center;"><div class="countdown-boite"><span id="countdown">Chargement…</span></div></div></section>
 
-  <section class="section"><h2>Dress Code</h2><p style="text-align:center;margin-bottom:30px;">Couleurs : <span style="background:var(--brun);color:white;padding:5px 15px;border-radius:40px;">Marron clair</span> <span style="background:var(--blanc);color:#2c1e12;padding:5px 15px;border-radius:40px;border:1px solid #ccc;">Blanc cassé</span> <span style="background:var(--orange);color:white;padding:5px 15px;border-radius:40px;">Orange brûlé</span></p><div class="dress-flex"><div class="dress-card"><i class="fas fa-vest"></i><h3>Homme</h3><p>Costume beige, chemise blanche, boutonnière orange</p></div><div class="dress-card"><i class="fas fa-tshirt"></i><h3>Femme</h3><p>Robe ivoire, accessoires orange brûlé</p></div><div class="dress-card"><i class="fas fa-shoe-prints"></i><h3>Chaussures</h3><p>Nude ou marron clair</p></div><div class="dress-card"><i class="fas fa-feather"></i><h3>Inspiration</h3><p>Tons terreux, élégance naturelle bamoun</p></div></div></div>
+  <section class="section"><h2>Dress Code</h2><p style="text-align:center;margin-bottom:30px;">Couleurs : <span style="background:var(--brun-fonce);color:white;padding:5px 15px;border-radius:40px;">Marron foncé</span> <span style="background:var(--blanc);color:#2c1e12;padding:5px 15px;border-radius:40px;border:1px solid #ccc;">Blanc cassé</span> <span style="background:var(--orange);color:white;padding:5px 15px;border-radius:40px;">Orange brûlé</span></p><div class="dress-flex"><div class="dress-card"><i class="fas fa-user-astronaut"></i><h3>Homme</h3><p>Gandoura marron foncé</p></div><div class="dress-card"><i class="fas fa-tshirt"></i><h3>Femme</h3><p>Robe marron, accessoires orange brûlé</p></div><div class="dress-card"><i class="fas fa-shoe-prints"></i><h3>Chaussures</h3><p>Nude ou marron</p></div><div class="dress-card"><i class="fas fa-feather"></i><h3>Inspiration</h3><p>Tons terreux, élégance naturelle bamoun</p></div></div></div>
 
 <section class="nav-section">
   <h2><i class="fas fa-route"></i> Comment venir ?</h2>
@@ -326,7 +327,7 @@ footer{background:var(--brun-dark);color:white;text-align:center;padding:25px;ma
 
   <section class="section"><h2>Confirmation de présence</h2><div style="max-width:600px;margin:0 auto;background:rgba(255,245,225,.7);padding:40px;border-radius:40px;"><form id="rsvpForm"><input type="text" id="nom" placeholder="Votre nom et prénom" required><select id="presence" required><option value="">Serez-vous présent(e) ?</option><option value="présent">Présent(e) ✅</option><option value="absent">Absent(e) ❌</option></select><textarea id="message-rsvp" placeholder="Vos vœux pour les mariés…" rows="3"></textarea><button type="submit" class="btn-submit"><i class="fas fa-paper-plane"></i> Envoyer ma réponse</button></form><div id="rsvp-message" style="text-align:center;margin-top:20px;color:green;font-weight:600;"></div></div></section>
 
-  <footer><i class="fas fa-heart" style="color:var(--orange);"></i> Nji Nahfon & Neuh Mounira · Avril 2026 <i class="fas fa-heart" style="color:var(--orange);"></i></footer>
+  <footer><i class="fas fa-heart" style="color:var(--orange);"></i> Nji Nahfon & Neh Mounira · Avril 2026 <i class="fas fa-heart" style="color:var(--orange);"></i></footer>
 </div>
 
 <button id="musicBtn"><i class="fas fa-music"></i></button>
