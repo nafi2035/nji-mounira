@@ -97,15 +97,15 @@ h1,h2,h3{font-family:'Playfair Display',serif;}
 .galerie-item:hover{transform:scale(1.02);box-shadow:0 20px 35px rgba(0,0,0,0.15);}
 .galerie-item img,.galerie-item .thumb-video{width:100%;height:100%;object-fit:cover;display:block;}
 .thumb-video{background:#1a0f06;}
-.badge-type{position:absolute;top:12px;left:12px;background:rgba(0,0,0,0.65);backdrop-filter:blur(4px);border-radius:30px;padding:5px 12px;color:white;font-family:'Poppins',sans-serif;font-size:0.72rem;font-weight:600;letter-spacing:0.5px;display:flex;align-items:center;gap:6px;pointer-events:none;}
+.badge-type{position:absolute;top:12px;left:12px;background:rgba(0,0,0,0.65);backdrop-filter:blur(4px);border-radius:30px;padding:5px 12px;color:white;font-family:'Poppins',sans-serif;font-size:0.72rem;font-weight:600;letter-spacing:0.5px;display:flex;align-items:center;gap:6px;pointer-events:none;z-index:5;}
 .badge-video{background:rgba(165,93,53,0.85);}
-.download-btn-gallery{position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.65);backdrop-filter:blur(4px);border:none;border-radius:40px;padding:7px 14px;color:white;font-size:0.75rem;font-weight:500;display:flex;align-items:center;gap:7px;cursor:pointer;z-index:10;transition:0.2s;font-family:'Poppins',sans-serif;}
+.download-btn-gallery{position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.65);backdrop-filter:blur(4px);border:none;border-radius:40px;padding:7px 14px;color:white;font-size:0.75rem;font-weight:500;display:flex;align-items:center;gap:7px;cursor:pointer;z-index:15;transition:0.2s;font-family:'Poppins',sans-serif;}
 .download-btn-gallery:hover{background:var(--orange);}
-.overlay-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.25s;pointer-events:none;}
+.overlay-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.25s;pointer-events:none;z-index:8;}
 .galerie-item:hover .overlay-icon{opacity:1;}
 .overlay-icon-inner{background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);border-radius:50%;width:58px;height:58px;display:flex;align-items:center;justify-content:center;color:white;font-size:1.6rem;border:2px solid rgba(255,255,255,0.3);}
-.card-title{position:absolute;bottom:0;left:0;right:0;padding:28px 14px 12px;background:linear-gradient(transparent, rgba(0,0,0,0.7));color:white;font-family:'Poppins',sans-serif;font-size:0.78rem;font-weight:500;pointer-events:none;text-align:center;}
-.delete-media{position:absolute;bottom:12px;right:12px;background:rgba(220,53,69,0.85);backdrop-filter:blur(4px);border:none;border-radius:30px;padding:5px 12px;color:white;font-size:0.7rem;font-weight:600;display:flex;align-items:center;gap:6px;cursor:pointer;z-index:10;transition:0.2s;font-family:'Poppins',sans-serif;}
+.card-title{position:absolute;bottom:0;left:0;right:0;padding:28px 14px 12px;background:linear-gradient(transparent, rgba(0,0,0,0.7));color:white;font-family:'Poppins',sans-serif;font-size:0.78rem;font-weight:500;pointer-events:none;text-align:center;z-index:5;}
+.delete-media{position:absolute;bottom:12px;right:12px;background:rgba(220,53,69,0.85);backdrop-filter:blur(4px);border:none;border-radius:30px;padding:5px 12px;color:white;font-size:0.7rem;font-weight:600;display:flex;align-items:center;gap:6px;cursor:pointer;z-index:15;transition:0.2s;font-family:'Poppins',sans-serif;}
 .delete-media:hover{background:#dc3545;transform:scale(1.05);}
 
 .admin-panel{position:fixed;bottom:25px;left:25px;z-index:9998;}
@@ -232,7 +232,7 @@ footer{background:var(--brun-dark);color:white;text-align:center;padding:25px;ma
 <div id="contenu-principal" style="display:none;opacity:0;transition:opacity 1s ease;">
   <section class="hero"><div class="hero-bg"></div><div class="hero-frame"><div class="corner c-tl"></div><div class="corner c-tr"></div><div class="corner c-bl"></div><div class="corner c-br"></div></div><div class="hero-content"><h1>Nji Nahfon<br>&amp; Neh Mounira</h1><p>Du 16 au 18 Avril 2026</p></div><div class="hero-scroll"><div class="scroll-line"></div>DÉCOUVRIR</div></section>
 
-  <div class="invitation-box"><i class="fas fa-quote-left" style="color:var(--orange);font-size:2rem;opacity:.5;"></i><p>Avec une joie immense, nous vous convions à célébrer l'union sacrée de nos cœurs.</p><p><strong>Nji Nahfon</strong>, épris d'amour pour sa bien-aimée, vous invite à partager ces instants de grâce.</p><p>La grande famille <strong>Nji Mefire Ndakue</strong>, fière et heureuse, se joint à lui pour vous accueillir et vous honorer de sa présence.</p><p>Que vos pas nous accompagnent dans cette danse de vie, où se mêlent traditions bamoun et promesses d'éternité.</p><div class="signature"><i class="fas fa-heart" style="color:var(--orange);"></i> Nji Nahfon & Neh Mounira <i class="fas fa-heart" style="color:var(--orange);"></i></div></div>
+  <div class="invitation-box"><i class="fas fa-quote-left" style="color:var(--orange);font-size:2rem;opacity:.5;"></i><p>Avec une joie immense, nous vous convions à célébrer l'union sacrée de nos cœurs.</p><p><strong>Nji Nahfon</strong>, épris d'amour pour sa bien-aimée, vous invite à partager ces instants de grâce.</p><p>La grande famille <strong>Nji Mefire Ndakue</strong>, fière et heureuse, se joint à lui pour vous accueillir et vous honorer de votre présence.</p><p>Que vos pas nous accompagnent dans cette danse de vie, où se mêlent traditions bamoun et promesses d'éternité.</p><div class="signature"><i class="fas fa-heart" style="color:var(--orange);"></i> Nji Nahfon & Neh Mounira <i class="fas fa-heart" style="color:var(--orange);"></i></div></div>
 
   <section class="section"><h2>Les mariés</h2><div class="bio-grid"><div class="bio-card"><img src="b.jpg" alt="Nji Nahfon" class="bio-avatar"><h3>Nji Nahfon</h3><p>Fils de Bangambi, fier héritier des traditions bamoun. Homme de cœur et de foi, il incarne la noblesse et l'engagement.</p><p class="bio-quote">« L'amour est un pont entre les âmes. »</p></div><div class="bio-card"><img src="c.jpg" alt="Neh Mounira" class="bio-avatar"><h3>Neh Mounira</h3><p>Originaire de Foumban, rayonnante de douceur et de sagesse. Elle unit avec grâce la modernité et l'attachement aux racines ancestrales.</p><p class="bio-quote">« Chaque jour à tes côtés est une promesse d'éternité. »</p></div></div></section>
 
@@ -250,7 +250,7 @@ footer{background:var(--brun-dark);color:white;text-align:center;padding:25px;ma
 
   <section class="section"><h2>Compte à rebours avant les noces</h2><div style="text-align:center;"><div class="countdown-boite"><span id="countdown">Chargement…</span></div></div></section>
 
-  <section class="section"><h2>Dress Code</h2><p style="text-align:center;margin-bottom:30px;">Couleurs : <span style="background:var(--brun-fonce);color:white;padding:5px 15px;border-radius:40px;">Marron foncé</span> <span style="background:var(--blanc);color:#2c1e12;padding:5px 15px;border-radius:40px;border:1px solid #ccc;">Blanc cassé</span> <span style="background:var(--orange);color:white;padding:5px 15px;border-radius:40px;">Orange brûlé</span></p><div class="dress-flex"><div class="dress-card"><i class="fas fa-user-astronaut"></i><h3>Homme</h3><p>Gandoura marron foncé</p></div><div class="dress-card"><i class="fas fa-tshirt"></i><h3>Femme</h3><p>Robe marron, accessoires orange brûlé</p></div><div class="dress-card"><i class="fas fa-shoe-prints"></i><h3>Chaussures</h3><p>Nude ou marron</p></div><div class="dress-card"><i class="fas fa-feather"></i><h3>Inspiration</h3><p>Tons terreux, élégance naturelle bamoun</p></div></div></div>
+  <section class="section"><h2>Dress Code</h2><p style="text-align:center;margin-bottom:30px;">Couleur principale : <span style="background:var(--brun-fonce);color:white;padding:5px 15px;border-radius:40px;">Marron foncé</span> <span style="background:var(--orange);color:white;padding:5px 15px;border-radius:40px;">Orange brûlé</span></p><div class="dress-flex"><div class="dress-card"><i class="fas fa-user-astronaut"></i><h3>Homme</h3><p>Gandoura marron foncé</p></div><div class="dress-card"><i class="fas fa-tshirt"></i><h3>Femme</h3><p>Robe, accessoires orange brûlé</p></div><div class="dress-card"><i class="fas fa-shoe-prints"></i><h3>Chaussures</h3><p>Nude ou marron </p></div><div class="dress-card"><i class="fas fa-feather"></i><h3>Inspiration</h3><p>Tons terreux, élégance naturelle bamoun</p></div></div></div>
 
 <section class="nav-section">
   <h2><i class="fas fa-route"></i> Comment venir ?</h2>
@@ -385,30 +385,28 @@ const ADMIN_CODE = "njimounira2026";
 // ========== 1. INITIALISATION INDEXEDDB ==========
 async function initIndexedDB() {
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open('WeddingGalleryDB', 2); // Version 2
+        const request = indexedDB.open('WeddingGalleryDB', 2);
         
         request.onerror = () => {
-            console.error('❌ Erreur IndexedDB:', request.error);
+            console.error('Erreur IndexedDB:', request.error);
             reject(request.error);
         };
         
         request.onsuccess = () => {
             db = request.result;
-            console.log('✅ IndexedDB initialisée avec succès');
+            console.log('IndexedDB initialisée');
             resolve(db);
         };
         
         request.onupgradeneeded = (event) => {
             const db = event.target.result;
-            // Supprimer l'ancien store si existant (pour mise à jour)
             if (db.objectStoreNames.contains('media')) {
                 db.deleteObjectStore('media');
             }
-            // Créer le nouveau store
             const store = db.createObjectStore('media', { keyPath: 'id' });
             store.createIndex('date', 'date');
             store.createIndex('type', 'type');
-            console.log('📦 Structure IndexedDB créée');
+            console.log('Structure IndexedDB créée');
         };
     });
 }
@@ -422,14 +420,8 @@ async function saveMediaToDB(media) {
         const store = transaction.objectStore('media');
         const request = store.put(media);
         
-        request.onsuccess = () => {
-            console.log('💾 Média sauvegardé:', media.id);
-            resolve(true);
-        };
-        request.onerror = () => {
-            console.error('❌ Erreur sauvegarde:', request.error);
-            reject(request.error);
-        };
+        request.onsuccess = () => resolve(true);
+        request.onerror = () => reject(request.error);
     });
 }
 
@@ -442,15 +434,8 @@ async function loadAllMediaFromDB() {
         const store = transaction.objectStore('media');
         const request = store.getAll();
         
-        request.onsuccess = () => {
-            const medias = request.result || [];
-            console.log(`📷 ${medias.length} médias chargés depuis IndexedDB`);
-            resolve(medias);
-        };
-        request.onerror = () => {
-            console.error('Erreur chargement:', request.error);
-            resolve([]);
-        };
+        request.onsuccess = () => resolve(request.result || []);
+        request.onerror = () => resolve([]);
     });
 }
 
@@ -463,15 +448,12 @@ async function deleteMediaFromDB(id) {
         const store = transaction.objectStore('media');
         const request = store.delete(id);
         
-        request.onsuccess = () => {
-            console.log('🗑️ Média supprimé:', id);
-            resolve(true);
-        };
+        request.onsuccess = () => resolve(true);
         request.onerror = () => reject(request.error);
     });
 }
 
-// ========== 5. SUPPRIMER TOUS LES MÉDIAS (reset) ==========
+// ========== 5. SUPPRIMER TOUS LES MÉDIAS ==========
 async function clearAllMedia() {
     if (!db) await initIndexedDB();
     
@@ -480,15 +462,12 @@ async function clearAllMedia() {
         const store = transaction.objectStore('media');
         const request = store.clear();
         
-        request.onsuccess = () => {
-            console.log('🗑️ Tous les médias supprimés');
-            resolve(true);
-        };
+        request.onsuccess = () => resolve(true);
         request.onerror = () => reject(request.error);
     });
 }
 
-// ========== FONCTIONS DE CONVERSION ET COMPRESSION ==========
+// ========== FONCTIONS DE CONVERSION ==========
 function compressImage(base64) {
     return new Promise((resolve) => {
         const img = new Image();
@@ -568,7 +547,7 @@ function generateVideoThumbnail(videoFile) {
     });
 }
 
-// ========== 6. AJOUTER UN MÉDIA (avec IndexedDB) ==========
+// ========== 6. AJOUTER UN MÉDIA ==========
 async function addMedia(file, downloadAllowed) {
     return new Promise(async (resolve, reject) => {
         try {
@@ -599,18 +578,13 @@ async function addMedia(file, downloadAllowed) {
                 downloadAllowed: downloadAllowed
             };
             
-            // Sauvegarder dans IndexedDB
             await saveMediaToDB(media);
-            
-            // Recharger la liste depuis IndexedDB
             mediaItems = await loadAllMediaFromDB();
             renderGallery();
             if (isAdmin) renderMediaListAdmin();
             
-            console.log('✅ Média ajouté avec succès');
             resolve(media);
         } catch(error) {
-            console.error('❌ Erreur:', error);
             reject(error);
         }
     });
@@ -652,7 +626,7 @@ function exportGallery() {
     a.download = `wedding_gallery_backup_${Date.now()}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    showStatus('✅ Galerie exportée avec succès!', 'success');
+    showStatus('Galerie exportée avec succès!', 'success');
 }
 
 // ========== 10. IMPORTER UNE SAUVEGARDE ==========
@@ -662,24 +636,19 @@ async function importGallery(file) {
         try {
             const data = JSON.parse(e.target.result);
             if (data.mediaItems && Array.isArray(data.mediaItems)) {
-                // Vider l'ancienne galerie
                 await clearAllMedia();
-                
-                // Ajouter tous les médias un par un
                 for (const media of data.mediaItems) {
                     await saveMediaToDB(media);
                 }
-                
                 mediaItems = await loadAllMediaFromDB();
                 renderGallery();
                 if (isAdmin) renderMediaListAdmin();
-                showStatus(`✅ Import réussi! ${mediaItems.length} médias chargés.`, 'success');
+                showStatus(`Import réussi! ${mediaItems.length} médias chargés.`, 'success');
             } else {
                 throw new Error('Format invalide');
             }
         } catch(error) {
-            console.error('Erreur import:', error);
-            showStatus('❌ Erreur lors de l\'import', 'error');
+            showStatus('Erreur lors de l\'import', 'error');
         }
     };
     reader.readAsText(file);
@@ -789,8 +758,8 @@ function renderGallery() {
             permBtn.style.fontSize = '0.65rem';
             permBtn.style.color = 'white';
             permBtn.style.cursor = 'pointer';
-            permBtn.style.zIndex = '10';
-            permBtn.innerHTML = item.downloadAllowed ? '<i class="fas fa-download"></i> DL autorisé' : '<i class="fas fa-ban"></i> DL bloqué';
+            permBtn.style.zIndex = '15';
+            permBtn.innerHTML = item.downloadAllowed ? '<i class="fas fa-download"></i> DL auto' : '<i class="fas fa-ban"></i> DL bloqué';
             permBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 toggleDownloadPermission(item);
@@ -916,7 +885,7 @@ function loginAdmin() {
         document.getElementById('adminModeBadge').style.display = 'flex';
         renderGallery();
         renderMediaListAdmin();
-        showStatus('✅ Mode administrateur activé', 'success');
+        showStatus('Mode administrateur activé', 'success');
     } else {
         document.getElementById('loginError').textContent = 'Code incorrect';
     }
@@ -960,14 +929,13 @@ function updatePreview() {
 
 // ========== INITIALISATION PRINCIPALE ==========
 async function init() {
-    console.log('🚀 Initialisation du site...');
+    console.log('Initialisation du site...');
     await initIndexedDB();
     mediaItems = await loadAllMediaFromDB();
     renderGallery();
-    console.log(`✅ ${mediaItems.length} médias chargés`);
+    console.log(`${mediaItems.length} médias chargés`);
 }
 
-// Lancer l'initialisation
 init();
 
 // ========== ÉVÉNEMENTS UI ==========
@@ -1030,7 +998,7 @@ document.getElementById('uploadBtn').addEventListener('click', async () => {
     pendingFiles = [];
     updatePreview();
     document.getElementById('fileInput').value = '';
-    showStatus(`✅ ${successCount} média(s) ajouté(s) avec succès!`, 'success');
+    showStatus(`${successCount} média(s) ajouté(s) avec succès!`, 'success');
 });
 
 document.getElementById('exportBackupBtn').addEventListener('click', exportGallery);
@@ -1052,7 +1020,7 @@ document.querySelectorAll('.galerie-tab').forEach(tab => {
     });
 });
 
-// ========== AUTRES FONCTIONS (papillons, musique, etc.) ==========
+// ========== AUTRES FONCTIONS ==========
 function getDirectionsFromMe(lat, lng, name) {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(position => {
